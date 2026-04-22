@@ -1,0 +1,2553 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>אור היום — Or HaYom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+Hebrew:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════
+   L7 — EXPERIENCE / DESIGN
+   ═══════════════════════════ */
+:root{
+  --bg:#09080600;
+  --bg1:#0B0B0C;
+  --bg2:#111113;
+  --bg3:#18181b;
+  --line:rgba(212,175,55,.12);
+  --line2:rgba(212,175,55,.22);
+  --gold:#D4AF37;
+  --gold2:#e8d4a8;
+  --gold3:#FFFFFF;
+  --cream:#F5F5F5;
+  --soft:#e0e0e0;
+  --muted:#9CA3AF;
+  --dim:#6B7280;
+  --knife:#F5F5F5;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg1);
+  color:var(--cream);
+  min-height:100vh;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 50% 30% at 8% 4%,rgba(170,130,60,.07),transparent),
+    radial-gradient(ellipse 35% 45% at 92% 88%,rgba(110,75,30,.05),transparent);
+}
+
+/* ── LOAD ── */
+#loadScreen{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg1);gap:18px;transition:opacity .7s ease;
+}
+#loadScreen.fade{opacity:0;pointer-events:none;}
+.load-glyph{
+  font-family:'Noto Serif Hebrew',serif;
+  font-size:44px;color:var(--gold);
+  animation:softpulse 2.4s ease-in-out infinite;
+}
+.load-word{
+  font-family:'Inter',sans-serif;font-size:11px;
+  letter-spacing:.28em;color:var(--dim);text-transform:uppercase;
+}
+@keyframes softpulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ── APP ── */
+.app{
+  max-width:1320px;margin:0 auto;
+  padding:0 22px 100px;
+  opacity:0;transition:opacity .6s ease .3s;
+}
+.app.on{opacity:1;}
+
+/* ── MODE SWITCH (morning / evening) ── */
+.mode-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 0 18px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:24px;flex-wrap:wrap;gap:12px;
+}
+.logo{display:flex;flex-direction:column;gap:1px;}
+.logo-heb{font-family:'Noto Serif Hebrew',serif;font-size:16px;color:var(--gold);direction:rtl;letter-spacing:.05em;}
+.logo-sub{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;}
+.mode-toggle{
+  display:flex;gap:0;
+  border:1px solid var(--line2);border-radius:999px;overflow:hidden;
+}
+.mtab{
+  padding:8px 20px;font-family:'Inter',sans-serif;
+  font-size:13px;letter-spacing:.06em;
+  background:transparent;border:none;color:var(--dim);cursor:pointer;
+  transition:all .2s;
+}
+.mtab.on{background:rgba(201,169,110,.10);color:var(--gold2);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.sdot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(58,138,58,.8);
+  box-shadow:0 0 7px rgba(58,138,58,.4);
+}
+.sdot.loading{background:var(--gold);animation:softpulse 1s ease-in-out infinite;}
+.sdot.err{background:rgba(180,60,60,.8);}
+.pill-sel{
+  background:rgba(255,255,255,.03);border:1px solid var(--line2);
+  border-radius:999px;color:var(--soft);
+  font-family:'Inter',sans-serif;font-size:13px;padding:7px 14px;
+  cursor:pointer;outline:none;letter-spacing:.04em;
+}
+.pill-sel option{background:#1a130a;color:var(--cream);}
+
+/* ── DATE STRIP ── */
+.date-strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+.dc{
+  padding:7px 14px;border:1px solid var(--line);border-radius:999px;
+  font-size:13px;color:var(--muted);letter-spacing:.05em;
+  background:rgba(255,255,255,.02);
+}
+.dc.hi{border-color:rgba(201,169,110,.26);color:var(--gold2);background:rgba(201,169,110,.055);}
+.dc.hb{font-family:'Noto Serif Hebrew',serif;font-size:15px;direction:rtl;}
+.dc.knife{border-color:rgba(201,169,110,.35);color:var(--gold3);background:rgba(201,169,110,.08);letter-spacing:.08em;}
+
+/* ── SHABBAT / HOLIDAY BAR ── */
+.ebar{
+  display:none;align-items:center;gap:14px;
+  padding:13px 20px;border:1px solid rgba(201,169,110,.16);
+  border-radius:16px;background:linear-gradient(135deg,rgba(22,17,9,.96),rgba(12,10,5,.98));
+  margin-bottom:22px;
+}
+.ebar.show{display:flex;}
+.eicon{font-size:20px;flex:0 0 auto;}
+.etxt{flex:1;}
+.elabel{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.einfo{font-size:15px;color:var(--cream);line-height:1.5;}
+.etimer{font-family:'Inter',sans-serif;font-size:19px;color:var(--gold2);letter-spacing:.06em;min-width:84px;text-align:right;}
+
+/* ═══════════════════════════════
+   MORNING VIEW
+   ═══════════════════════════════ */
+#morningView{}
+
+/* HERO — morning */
+.hero{
+  position:relative;overflow:hidden;
+  border:1px solid var(--line);border-radius:24px;
+  background:linear-gradient(148deg,var(--bg3) 0%,var(--bg2) 50%,rgba(9,7,4,1) 100%);
+  padding:38px 42px 34px;margin-bottom:18px;
+}
+.hero::after{
+  content:"";position:absolute;right:-100px;top:-100px;
+  width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,110,.08),transparent 65%);
+  pointer-events:none;
+}
+.h-eyebrow{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  font-family:'Inter',sans-serif;font-weight:400;
+  color:var(--gold);margin-bottom:14px;
+}
+.h-source{
+  font-size:16px;color:var(--muted);font-style:italic;
+  font-family:'Inter',sans-serif;
+  margin-bottom:18px;letter-spacing:.03em;
+  border-left:2px solid var(--dim);padding-left:12px;
+}
+.h-title{
+  font-family:'Inter',sans-serif;font-weight:500;
+  font-size:clamp(24px,3.2vw,44px);
+  color:var(--gold3);
+  line-height:1.1;margin-bottom:16px;max-width:660px;
+}
+.h-tension{
+  font-size:19px;line-height:1.9;
+  font-family:'Inter',sans-serif;font-weight:400;
+  color:var(--soft);max-width:640px;
+  margin-bottom:14px;
+}
+.h-meaning{
+  font-size:17px;line-height:1.88;
+  font-family:'Inter',sans-serif;font-weight:300;
+  color:var(--muted);max-width:640px;
+  margin-bottom:20px;
+}
+.h-action{
+  font-size:16px;color:var(--dim);line-height:1.7;
+  font-family:'Inter',sans-serif;
+  margin-bottom:24px;
+}
+
+/* CTA BLOCK */
+.cta-block{
+  display:flex;align-items:center;gap:20px;
+  margin-bottom:28px;margin-top:4px;
+}
+.cta-primary{
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:500;
+  color:#0B0B0C;background:var(--gold);
+  border:none;border-radius:6px;
+  padding:11px 22px;cursor:pointer;
+  letter-spacing:.02em;
+  transition:opacity .2s, transform .15s;
+}
+.cta-primary:hover{opacity:.88;transform:translateY(-1px);}
+.cta-primary:active{transform:translateY(0);}
+.cta-secondary{
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:400;
+  color:var(--muted);cursor:pointer;
+  letter-spacing:.04em;
+  text-decoration:none;
+  border-bottom:1px solid rgba(156,163,175,.3);
+  padding-bottom:1px;
+  transition:color .2s,border-color .2s;
+}
+.cta-secondary:hover{color:var(--cream);border-color:rgba(245,245,245,.3);}
+
+/* PATH COUNTER */
+.path-counter{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-bottom:20px;
+}
+.path-num{
+  font-family:'Inter',sans-serif;font-weight:400;
+  font-size:11px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;
+}
+.path-bar{
+  width:120px;height:1px;background:rgba(210,175,110,.10);
+  position:relative;overflow:hidden;
+}
+.path-fill{
+  position:absolute;top:0;left:0;height:100%;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+}
+
+/* TRUTH CUT — the knife */
+.truth-cut-wrap{
+  margin-top:8px;
+  padding-top:28px;
+  border-top:1px solid rgba(201,169,110,.10);
+  /* starts hidden — micro-pause before appearing */
+  opacity:0;
+}
+.truth-cut-wrap.revealed{
+  animation:tcReveal 1.4s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes tcReveal{
+  0%{opacity:0;transform:translateY(10px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+
+.tc-brand{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.tc-brand-line{
+  width:24px;height:1px;background:rgba(201,169,110,.30);
+}
+.tc-brand-label{
+  font-family:'Inter',sans-serif;font-weight:500;
+  font-size:9px;letter-spacing:.30em;text-transform:uppercase;
+  color:rgba(212,175,55,.55);
+}
+
+.truth-cut{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(28px,3.5vw,40px);
+  color:var(--knife);
+  line-height:1.3;
+  letter-spacing:.01em;
+  max-width:580px;
+  margin-bottom:24px;
+}
+
+/* SHARE — after truth cut */
+.tc-share{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;
+}
+.tc-share-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;
+  border:1px solid rgba(201,169,110,.18);border-radius:999px;
+  background:transparent;
+  color:var(--dim);
+  font-family:'Inter',sans-serif;font-size:13px;letter-spacing:.06em;
+  cursor:pointer;transition:all .2s;
+}
+.tc-share-btn:hover{
+  border-color:rgba(201,169,110,.32);color:var(--gold);
+  background:rgba(201,169,110,.04);
+}
+.tc-share-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.tc-copied{
+  font-size:12px;color:var(--gold);letter-spacing:.08em;
+  opacity:0;transition:opacity .3s;
+  font-family:'Inter',sans-serif;
+}
+.tc-copied.show{opacity:1;}
+
+/* SILENCE — after truth cut: 2s VOID, then dots */
+.silence{
+  margin-top:28px;
+  height:44px;
+  display:flex;align-items:center;
+  /* pure nothing first — the void IS the experience */
+  opacity:0;
+  animation:silenceIn 1s ease 5.5s forwards;
+}
+.silence-dots{display:flex;gap:10px;}
+.silence-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--dim);
+  animation:silenceDot 3.5s ease-in-out infinite;
+}
+.silence-dot:nth-child(2){animation-delay:.5s;}
+.silence-dot:nth-child(3){animation-delay:1s;}
+@keyframes silenceIn{to{opacity:1}}
+@keyframes silenceDot{0%,100%{opacity:.12}50%{opacity:.45}}
+
+/* ANOMALY DAY — produs tace */
+#anomalyView{
+  display:none;
+  min-height:80vh;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:60px 20px;
+  gap:32px;
+}
+#anomalyView.show{display:flex;}
+.anomaly-date-heb{
+  font-family:'Noto Serif Hebrew',serif;
+  font-size:48px;color:rgba(201,169,110,.18);
+  direction:rtl;letter-spacing:.06em;
+  animation:anomalyFade 8s ease-in-out infinite alternate;
+}
+.anomaly-date-greg{
+  font-family:'Inter',sans-serif;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);
+}
+.anomaly-line{
+  font-family:'Inter',sans-serif;
+  font-size:16px;letter-spacing:.14em;
+  color:rgba(201,169,110,.28);
+  text-transform:uppercase;
+  max-width:320px;line-height:1.8;
+}
+@keyframes anomalyFade{0%{opacity:.4}100%{opacity:.12}}
+
+/* WEEKLY ARC — vineri */
+.weekly-arc{
+  display:none;
+  margin-bottom:20px;
+  padding:14px 18px;
+  border:1px solid rgba(201,169,110,.10);
+  border-radius:14px;
+  background:rgba(201,169,110,.03);
+}
+.weekly-arc.show{display:block;}
+.arc-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.arc-line{font-size:16px;line-height:1.75;color:var(--muted);font-style:italic;}
+
+/* FIRST VISIT */
+.first-visit-line{
+  display:none;
+  font-size:14px;color:var(--dim);letter-spacing:.06em;
+  font-style:italic;margin-bottom:16px;
+  animation:rise .8s ease forwards;
+}
+.first-visit-line.show{display:block;}
+
+/* NOTIFICATION BUTTON */
+.notif-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;
+  border:1px solid var(--line);border-radius:999px;
+  background:transparent;color:var(--dim);
+  font-family:'Inter',sans-serif;font-size:13px;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;margin-top:0;
+}
+.notif-btn:hover{border-color:var(--line2);color:var(--gold);}
+.notif-btn.on{color:var(--gold2);border-color:rgba(201,169,110,.30);}
+.notif-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── GRID ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+
+/* ── PANEL ── */
+.panel{
+  border:1px solid var(--line);border-radius:20px;
+  background:linear-gradient(160deg,rgba(20,16,10,.78),rgba(11,9,5,.92));
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.ph{
+  padding:16px 20px 13px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.ph-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);}
+.ph-tag{font-size:11px;color:var(--dim);padding:3px 9px;border-radius:999px;border:1px solid var(--line);}
+.pb{padding:18px 20px;}
+.pb.sc{max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,.12) transparent;}
+
+/* ── SACRED DATA ── */
+.srow{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);gap:12px;}
+.srow:last-child{border-bottom:none;}
+.sk{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+.sv{font-size:14px;color:var(--soft);text-align:right;max-width:62%;}
+.sv.g{color:var(--gold2);}
+.sv.hb{font-family:'Noto Serif Hebrew',serif;font-size:16px;direction:rtl;}
+.sv.tg{font-size:11px;padding:2px 9px;border-radius:999px;border:1px solid rgba(201,169,110,.20);color:var(--gold);background:rgba(201,169,110,.04);}
+
+/* ── PARASHA ── */
+.pname{font-family:'Inter',sans-serif;font-size:18px;color:var(--gold2);margin-bottom:4px;letter-spacing:.06em;}
+.phb{font-family:'Noto Serif Hebrew',serif;font-size:16px;color:var(--gold);direction:rtl;text-align:right;margin-bottom:10px;}
+.pfrag{font-size:15px;line-height:1.85;color:var(--soft);font-style:italic;border-left:2px solid rgba(201,169,110,.18);padding-left:12px;margin-bottom:10px;}
+.pq{font-size:14px;line-height:1.75;color:var(--muted);}
+
+/* ── PRAYER ── */
+.ptabs{display:flex;gap:3px;padding:10px 20px 0;border-bottom:1px solid var(--line);}
+.ptab{
+  padding:7px 12px;border-radius:9px 9px 0 0;
+  font-size:12px;letter-spacing:.04em;color:var(--dim);
+  cursor:pointer;border:1px solid transparent;border-bottom:none;
+  background:transparent;font-family:'Inter',sans-serif;transition:all .15s;
+}
+.ptab:hover{color:var(--gold2);}
+.ptab.on{color:var(--gold2);border-color:var(--line);background:rgba(201,169,110,.04);}
+.pc{padding:20px;}
+.pheb{font-family:'Noto Serif Hebrew',serif;font-size:22px;line-height:2;color:var(--gold3);direction:rtl;text-align:right;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:12px;}
+.ptrlit{font-size:14px;line-height:1.9;color:var(--soft);font-style:italic;margin-bottom:8px;letter-spacing:.02em;}
+.pro{font-size:14px;line-height:1.85;color:var(--muted);}
+.pname-label{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:12px;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 14px;border:1px solid var(--line2);border-radius:999px;
+  background:transparent;color:var(--gold);
+  font-family:'Inter',sans-serif;font-size:13px;
+  cursor:pointer;letter-spacing:.04em;transition:all .15s;
+  margin-top:12px;
+}
+.btn:hover{background:rgba(201,169,110,.06);}
+.btn.dim{color:var(--muted);}
+.btn.dim:hover{color:var(--gold);}
+.btn.sp{color:var(--gold2);border-color:rgba(201,169,110,.35);}
+
+/* ── KAVANA ── */
+.ktxt{
+  width:100%;background:rgba(255,255,255,.03);
+  border:1px solid var(--line);border-radius:11px;
+  color:var(--cream);font-family:'Inter',sans-serif;
+  font-size:16px;line-height:1.7;padding:12px 14px;
+  resize:none;outline:none;min-height:72px;transition:border-color .15s;
+}
+.ktxt:focus{border-color:rgba(201,169,110,.28);}
+.ktxt::placeholder{color:var(--dim);font-style:italic;}
+.kentry{padding:10px 0;border-top:1px solid var(--line);display:flex;gap:9px;align-items:flex-start;}
+.kdot{width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:8px;flex:0 0 auto;box-shadow:0 0 7px rgba(201,169,110,.30);}
+.kd{font-size:11px;color:var(--dim);margin-bottom:2px;letter-spacing:.04em;}
+.kt{font-size:14px;color:var(--soft);line-height:1.7;font-style:italic;}
+
+/* ── OMER ── */
+.onum{font-family:'Inter',sans-serif;font-size:52px;color:var(--gold3);line-height:1;margin-bottom:6px;letter-spacing:.04em;text-align:center;}
+.ohb{font-family:'Noto Serif Hebrew',serif;font-size:17px;color:var(--gold);direction:rtl;text-align:center;margin-bottom:12px;}
+.osefs{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.oc{padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--dim);background:rgba(255,255,255,.015);}
+.oc.on{border-color:rgba(201,169,110,.25);color:var(--gold2);background:rgba(201,169,110,.055);}
+.omean{font-size:14px;color:var(--muted);line-height:1.75;text-align:center;}
+
+/* ═══════════════════════════════
+   EVENING VIEW
+   ═══════════════════════════════ */
+#eveningView{display:none;}
+
+.evening-wrap{
+  min-height:70vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 20px;
+  text-align:center;
+  gap:0;
+}
+.ev-date{
+  font-size:11px;letter-spacing:.20em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:48px;
+}
+.ev-morning-tc{
+  font-family:'Inter',sans-serif;
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:20px;
+  opacity:.6;
+}
+.ev-echo{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(22px,3.5vw,42px);
+  color:var(--gold2);
+  line-height:1.35;
+  max-width:620px;
+  letter-spacing:.02em;
+  margin-bottom:64px;
+}
+.ev-silence{
+  display:flex;flex-direction:column;align-items:center;gap:32px;
+}
+.ev-dots{display:flex;gap:12px;}
+.ev-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--dim);
+  animation:silenceDot 4s ease-in-out infinite;
+}
+.ev-dot:nth-child(2){animation-delay:.6s;}
+.ev-dot:nth-child(3){animation-delay:1.2s;}
+.ev-nothing{
+  font-size:13px;color:var(--dim);letter-spacing:.14em;
+  text-transform:uppercase;opacity:.5;
+}
+
+/* ── AI MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.80);z-index:150;
+  align-items:center;justify-content:center;padding:20px;
+}
+.overlay.open{display:flex;}
+.modal{
+  width:min(600px,100%);
+  background:linear-gradient(160deg,#1e1810,#120d07);
+  border:1px solid var(--line2);border-radius:22px;
+  padding:32px;position:relative;
+  max-height:80vh;overflow-y:auto;
+}
+.mcl{position:absolute;top:13px;right:17px;background:none;border:none;color:var(--muted);font-size:21px;cursor:pointer;transition:color .15s;line-height:1;}
+.mcl:hover{color:var(--gold);}
+.mlb{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:9px;}
+.mtt{font-family:'Inter',sans-serif;font-size:18px;color:var(--gold2);margin-bottom:16px;}
+.mbody{font-size:16px;line-height:1.88;color:var(--soft);}
+.mbody p{margin-bottom:10px;}
+.mbody p:last-child{margin-bottom:0;}
+.mdots{display:inline-flex;gap:3px;vertical-align:middle;margin-left:5px;}
+.mdots span{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:.4;animation:dp 1.2s ease-in-out infinite;}
+.mdots span:nth-child(2){animation-delay:.2s;}
+.mdots span:nth-child(3){animation-delay:.4s;}
+@keyframes dp{0%,80%,100%{opacity:.2}40%{opacity:.9}}
+
+/* ── FOOTER ── */
+footer{
+  margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--dim);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;flex-wrap:wrap;gap:10px;
+}
+footer a{color:var(--dim);text-decoration:none;border-bottom:1px solid rgba(88,72,56,.3);}
+footer a:hover{color:var(--muted);}
+
+/* ── ANIMATIONS ── */
+.rv{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards;}
+.r1{animation-delay:.06s}.r2{animation-delay:.14s}.r3{animation-delay:.24s}
+.r4{animation-delay:.36s}.r5{animation-delay:.50s}.r6{animation-delay:.64s}
+.r7{animation-delay:.78s}.r8{animation-delay:.94s}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:960px){
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .hero{padding:26px 22px 24px;}
+  .h-title{font-size:28px;}
+  .truth-cut{font-size:28px;}
+}
+@media(max-width:600px){
+  .hero{padding:20px 16px 20px;}
+  .ev-echo{font-size:22px;}
+  .truth-cut{font-size:26px;}
+}
+
+.context-shell{margin:18px 0 20px;border:1px solid rgba(230,193,110,.18);border-radius:24px;background:linear-gradient(180deg,rgba(12,12,18,.96),rgba(10,10,14,.9));box-shadow:0 22px 60px rgba(0,0,0,.26);overflow:hidden}
+.context-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:18px 18px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.context-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-2)}
+.context-title{font-size:26px;line-height:1.08;margin:6px 0 4px;font-family:Georgia,serif}
+.context-sub{color:var(--muted);max-width:780px}
+.context-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(230,193,110,.16);border-radius:999px;color:var(--text);font-size:12px;background:rgba(230,193,110,.06)}
+.context-grid{display:grid;grid-template-columns:1.2fr .9fr;gap:16px;padding:18px}
+.context-panel{border:1px solid rgba(255,255,255,.06);border-radius:20px;background:rgba(255,255,255,.02);padding:16px}
+.mirror-head{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.mirror-col-label{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.mirror-col-label.right{text-align:right}
+.mirror-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 0;border-top:1px solid rgba(255,255,255,.06);align-items:center}
+.mirror-row:first-of-type{border-top:none;padding-top:4px}
+.mirror-cell{font-size:16px}
+.mirror-cell.mid{text-align:center;color:#e7dfc8}
+.mirror-cell.right{text-align:right;direction:rtl;font-size:22px;font-family:'Noto Sans Hebrew',system-ui,sans-serif}
+.mirror-note{margin-top:10px;color:var(--muted);font-size:13px}
+.rule-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-card{border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:14px;background:rgba(255,255,255,.018)}
+.rule-k{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--gold-2);margin-bottom:8px}
+.rule-v{font-size:15px;line-height:1.45}
+.context-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.soft-btn{appearance:none;border:1px solid rgba(230,193,110,.16);background:rgba(230,193,110,.06);color:var(--text);padding:10px 14px;border-radius:999px;cursor:pointer}
+.soft-btn:hover{background:rgba(230,193,110,.11)}
+.terms-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0 18px 18px}
+.term-card{border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:14px;background:rgba(255,255,255,.02)}
+.term-he{direction:rtl;text-align:right;font-size:22px;font-family:'Noto Sans Hebrew',system-ui,sans-serif}
+.term-tr{font-size:14px;color:#eadcb5;margin-top:4px}
+.term-en{margin-top:6px;font-size:14px;color:var(--text)}
+.term-mini{margin-top:8px;font-size:13px;color:var(--muted);line-height:1.45}
+.overlay{position:fixed;inset:0;background:rgba(5,5,8,.72);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;padding:18px;z-index:50}
+.overlay.open{display:flex}
+.sheet{width:min(980px,100%);max-height:88vh;overflow:auto;border:1px solid rgba(230,193,110,.18);border-radius:28px 28px 18px 18px;background:linear-gradient(180deg,#12121a,#0c0c13);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.sheet-head{display:flex;justify-content:space-between;gap:16px;padding:18px;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;background:linear-gradient(180deg,#12121a,#101018);z-index:2}
+.sheet-body{padding:18px}
+.close-x{appearance:none;border:none;background:transparent;color:var(--muted);font-size:28px;line-height:1;cursor:pointer}
+.guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.guide-card{border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:16px;background:rgba(255,255,255,.02)}
+.guide-card h4{margin:0 0 8px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-2)}
+.guide-card p,.guide-card li{font-size:15px;line-height:1.55;color:var(--text)}
+.guide-card ul{margin:0;padding-left:18px}
+.share-card-preview{margin-top:14px;border:1px solid rgba(230,193,110,.14);border-radius:24px;padding:18px;background:radial-gradient(circle at top left,rgba(230,193,110,.11),transparent 46%),rgba(255,255,255,.02)}
+.share-mark{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-2);margin-bottom:10px}
+.share-line{font-size:22px;line-height:1.22;font-family:Georgia,serif;margin-bottom:10px}
+.share-meta{font-size:13px;color:var(--muted);line-height:1.5}
+@media (max-width: 900px){.context-grid,.guide-grid,.terms-strip{grid-template-columns:1fr}.rule-list{grid-template-columns:1fr}.mirror-cell.right{font-size:18px}.context-title{font-size:22px}}
+
+</style>
+</head>
+<body>
+
+<div id="loadScreen">
+  <div class="load-glyph">יהי</div>
+  <div class="load-word">se citește ziua</div>
+</div>
+
+<div class="app" id="app">
+
+  <div class="mode-bar rv r1">
+    <div class="logo"><span class="logo-heb">אור היום</span><span class="logo-sub">Or HaYom</span></div>
+    <div class="mode-toggle">
+      <button class="mtab on" id="mTabMorn" onclick="setMode('morning')">🌅 Dimineață</button>
+      <button class="mtab" id="mTabEve" onclick="setMode('evening')">🌙 Seară</button>
+    </div>
+    <div class="header-right">
+      <button class="notif-btn" id="notifBtn" onclick="toggleNotif()">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        The Cut dimineața
+      </button>
+      <div class="sdot loading" id="sdot"></div>
+      <select class="pill-sel" id="minhagSel" onchange="onMinhag(this.value)">
+        <option value="sfarad">Sefarad</option>
+        <option value="ashkenaz">Ashkenaz</option>
+        <option value="mizrahi">Mizrahi</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="date-strip rv r2" id="dateStrip"><div class="dc">Se încarcă...</div></div>
+
+  <div class="ebar rv r2" id="ebar">
+    <div class="eicon" id="eicon">🕯</div>
+    <div class="etxt">
+      <div class="elabel" id="elabel">Shabbat</div>
+      <div class="einfo" id="einfo">...</div>
+    </div>
+    <div class="etimer" id="etimer">--:--:--</div>
+  </div>
+
+  <!-- ANOMALY DAY — produsul tace -->
+  <div id="anomalyView">
+    <div class="anomaly-date-heb" id="anomalyHeb"></div>
+    <div class="anomaly-date-greg" id="anomalyGreg"></div>
+    <div class="anomaly-line" id="anomalyLine"></div>
+  </div>
+
+  <!-- ═══ MORNING VIEW ═══ -->
+
+      <section class="context-shell" aria-label="Jewish context of the day">
+        <div class="context-head">
+          <div>
+            <div class="context-kicker">Jewish frame</div>
+            <h2 class="context-title">Context of the Day</h2>
+            <div class="context-sub">The page starts from the religious frame of the day: what the day is, what it asks, what it permits, what it forbids, and what it brings.</div>
+          </div>
+          <div class="context-badge" id="ctxBadge">Loading frame…</div>
+        </div>
+        <div class="context-grid">
+          <div class="context-panel">
+            <div class="mirror-head">
+              <div class="mirror-col-label">English</div>
+              <div class="mirror-col-label" style="text-align:center">Transliteration</div>
+              <div class="mirror-col-label right">עברית</div>
+            </div>
+            <div class="mirror-row">
+              <div class="mirror-cell" id="mWeekEn">—</div>
+              <div class="mirror-cell mid" id="mWeekTr">—</div>
+              <div class="mirror-cell right" id="mWeekHe">—</div>
+            </div>
+            <div class="mirror-row">
+              <div class="mirror-cell" id="mDateEn">—</div>
+              <div class="mirror-cell mid" id="mDateTr">—</div>
+              <div class="mirror-cell right" id="mDateHe">—</div>
+            </div>
+            <div class="mirror-note" id="mirrorNote">Hebrew, transliteration, and English remain in parallel so the user can learn the language of the day without losing the sacred source.</div>
+          </div>
+          <div class="context-panel">
+            <div class="rule-list">
+              <div class="rule-card"><div class="rule-k">What is the day?</div><div class="rule-v" id="rWhat">—</div></div>
+              <div class="rule-card"><div class="rule-k">What does the day ask?</div><div class="rule-v" id="rAsk">—</div></div>
+              <div class="rule-card"><div class="rule-k">What does the day permit?</div><div class="rule-v" id="rPermit">—</div></div>
+              <div class="rule-card"><div class="rule-k">What does the day forbid?</div><div class="rule-v" id="rForbid">—</div></div>
+              <div class="rule-card" style="grid-column:1/-1"><div class="rule-k">What does the day bring?</div><div class="rule-v" id="rBring">—</div></div>
+            </div>
+            <div class="context-actions">
+              <button class="soft-btn" id="openGuideBtn" type="button">Open Day Guide</button>
+              <button class="soft-btn" id="openTermsBtn" type="button">Open Terms</button>
+              <button class="soft-btn" id="shareContextBtn" type="button">Share Context Card</button>
+            </div>
+          </div>
+        </div>
+        <div class="terms-strip" id="termsStrip"></div>
+      </section>
+
+      <div class="overlay" id="guideOverlay" aria-hidden="true">
+        <div class="sheet">
+          <div class="sheet-head">
+            <div>
+              <div class="context-kicker">Layer</div>
+              <div class="context-title" style="font-size:24px;margin:4px 0 0">Day Guide</div>
+            </div>
+            <button class="close-x" id="closeGuideBtn" type="button" aria-label="Close">×</button>
+          </div>
+          <div class="sheet-body" id="guideBody"></div>
+        </div>
+      </div>
+  <div id="morningView">
+
+    <!-- HERO: L0+L1+L2+L3+L4+L5+L6 -->
+    <div class="hero rv r3" id="heroCard">
+
+      <!-- PATH COUNTER -->
+      <div class="path-counter" id="pathCounter">
+        <span class="path-num" id="pathLabel">Ziua — din drum</span>
+        <div class="path-bar"><div class="path-fill" id="pathFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- WEEKLY ARC (vineri) -->
+      <div class="weekly-arc" id="weeklyArc">
+        <div class="arc-label">Arcul săptămânii</div>
+        <div class="arc-line" id="arcLine"></div>
+      </div>
+
+      <!-- FIRST VISIT LINE -->
+      <div class="first-visit-line" id="firstVisitLine">Prima zi. Nu știi încă ce cere asta de la tine.</div>
+
+      <div class="h-eyebrow" id="hEyebrow">Calendar Evreiesc Zilnic</div>
+      <div class="h-source" id="hSource" style="display:none;"></div>
+      <div class="h-title" id="hTitle">
+        <span style="font-style:italic;color:var(--dim)">Se citește ziua<span class="mdots"><span></span><span></span><span></span></span></span>
+      </div>
+      <div class="h-tension" id="hTension"></div>
+      <div class="h-meaning" id="hMeaning"></div>
+      <div class="h-action" id="hAction"></div>
+      <div class="cta-block" id="ctaBlock" style="display:none;">
+        <button class="cta-primary" onclick="document.getElementById('overlay') && openExplain(document.getElementById('hTitle').textContent, document.getElementById('hTitle').textContent + '. ' + document.getElementById('hTension').textContent)">Înțelege mai mult</button>
+        <span class="cta-secondary" onclick="document.querySelector('.truth-cut-wrap') && document.querySelector('.truth-cut-wrap').scrollIntoView({behavior:'smooth'})">Citește</span>
+      </div>
+
+      <!-- L5 — TRUTH CUT (hidden until micro-pause complete) -->
+      <div class="truth-cut-wrap" id="tcWrap" style="display:none;">
+        <div class="tc-brand">
+          <div class="tc-brand-line"></div>
+          <div class="tc-brand-label">The Cut</div>
+          <div class="tc-brand-line"></div>
+        </div>
+        <div class="truth-cut" id="truthCut"></div>
+        <div class="tc-share">
+          <button class="tc-share-btn" onclick="shareTC()">
+            <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+            Trimite cuiva
+          </button>
+          <span class="tc-copied" id="tcCopied">Copiat ✓</span>
+        </div>
+        <!-- L6 — SILENCE: 2s void then dots -->
+        <div class="silence">
+          <div class="silence-dots">
+            <div class="silence-dot"></div>
+            <div class="silence-dot"></div>
+            <div class="silence-dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2 rv r4">
+
+      <!-- PRAYER MODULE -->
+      <div class="panel">
+        <div class="ptabs" id="ptabs">
+          <button class="ptab on" onclick="switchPrayer('shacharit',this)">Shacharit</button>
+          <button class="ptab" onclick="switchPrayer('mincha',this)">Mincha</button>
+          <button class="ptab" onclick="switchPrayer('maariv',this)">Ma'ariv</button>
+        </div>
+        <div class="pc" id="prayerContent"></div>
+      </div>
+
+      <!-- KAVANA -->
+      <div class="panel">
+        <div class="ph"><div class="ph-label">Kavana — Intenție</div></div>
+        <div class="pb">
+          <textarea class="ktxt" id="kavanaInput" rows="3" placeholder="Intenția ta pentru astăzi..."></textarea>
+          <button class="btn" onclick="saveKavana()">Salvează</button>
+          <div id="kavanaList" style="margin-top:12px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3 rv r5">
+
+      <!-- SACRED ENGINE STATUS -->
+      <div class="panel">
+        <div class="ph">
+          <div class="ph-label">Motorul Sacru</div>
+          <div class="ph-tag" id="calTag">Hebcal</div>
+        </div>
+        <div class="pb">
+          <div class="srow"><span class="sk">Data ebraică</span><span class="sv g" id="s1">—</span></div>
+          <div class="srow"><span class="sk">Ebraică</span><span class="sv hb" id="s2">—</span></div>
+          <div class="srow"><span class="sk">Eveniment</span><span class="sv" id="s3">—</span></div>
+          <div class="srow"><span class="sk">Tip zi</span><span class="sv" id="s4">—</span></div>
+          <div class="srow"><span class="sk">Omer</span><span class="sv" id="s5">—</span></div>
+          <div class="srow" style="border:none"><span class="sk">Daf Yomi</span><span class="sv" id="s6">—</span></div>
+        </div>
+      </div>
+
+      <!-- PARASHA -->
+      <div class="panel">
+        <div class="ph">
+          <div class="ph-label">Parasha</div>
+          <button class="btn" style="margin:0;padding:4px 11px;font-size:11px;"
+            onclick="openExplain('Parasha '+document.getElementById('pnameEl').textContent,'Explică tema centrală a acestei parașe și cum se aplică în viața de astăzi. Română, 3 paragrafe, profunzime.')">Explică</button>
+        </div>
+        <div class="pb sc" id="parashaEl"><div style="color:var(--dim);font-style:italic;">Se încarcă...</div></div>
+      </div>
+
+      <!-- DAF + CITAT -->
+      <div class="panel">
+        <div class="ph"><div class="ph-label">Studiu zilnic</div></div>
+        <div class="pb" id="dafEl"><div style="color:var(--dim);font-style:italic;">Se încarcă...</div></div>
+      </div>
+    </div>
+
+    <!-- OMER (doar în perioadă) -->
+    <div class="panel rv r6" id="omerPanel" style="display:none;margin-bottom:18px;">
+      <div class="ph">
+        <div class="ph-label">Sefirat HaOmer</div>
+        <div class="ph-tag" id="omerTag">—</div>
+      </div>
+      <div class="pb" id="omerContent" style="text-align:center;"></div>
+    </div>
+
+  </div><!-- /morningView -->
+
+  <!-- ═══ EVENING VIEW ═══ -->
+  <div id="eveningView">
+    <div class="evening-wrap">
+      <div class="ev-date" id="evDate"></div>
+      <div class="ev-morning-tc" id="evMorningRef">dimineață ai primit</div>
+      <div class="ev-echo" id="evEcho">...</div>
+      <div class="ev-silence">
+        <div class="ev-dots">
+          <div class="ev-dot"></div>
+          <div class="ev-dot"></div>
+          <div class="ev-dot"></div>
+        </div>
+        <div class="ev-nothing">—</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="rv r8">
+    <span>Lent · Sacru · Ancorat · Botoșani</span>
+    <span>Date de la <a href="https://hebcal.com" target="_blank">hebcal.com</a></span>
+  </footer>
+
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="modal">
+    <button class="mcl" onclick="closeOverlay()">×</button>
+    <div class="mlb">Explicație din tradiție</div>
+    <div class="mtt" id="mTitle"></div>
+    <div id="mBody"><div style="color:var(--muted);font-style:italic;">Se caută<span class="mdots"><span></span><span></span><span></span></span></div></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+//  L0 — SOURCE LAYER
+//  Texte autoritate: Tora, Talmud, Psalmi, gânditori
+// ═══════════════════════════════════════════════════════════
+const SOURCES = {
+  // cheie: tip zi / sezon / parasha / temă
+  shabbat: 'Bereshit 2:3 — „Și a sfințit Dumnezeu ziua a șaptea și s-a odihnit"',
+  erev_shabbat: 'Shabbat 119b — „Shabbat vine ca o regină; pregătești casa, nu sufletul"',
+  pesach: 'Shemot 13:8 — „Și vei spune fiului tău în ziua aceea: pentru aceasta a făcut Dumnezeu pentru mine"',
+  omer_early: 'Vayikra 23:15 — „Și veți număra vouă, din ziua de după Shabbat... șapte săptămâni întregi"',
+  omer_mid: 'Sfat Emet — „Fiecare zi a Omerului curăță un strat diferit din suflet"',
+  omer_late: 'Maharal din Praga — „A 49-a zi: omul devine vas gol, pregătit să primească"',
+  shavuot: 'Shemot 19:2 — „Și a tăbărât Israel acolo, în fața muntelui" — la singular, ca un singur om',
+  rosh_hashana: 'Rosh HaShanah 16b — „Trei cărți se deschid: cei cu totul drepți, cei cu totul răi, și cei de la mijloc"',
+  yom_kippur: 'Vayikra 16:30 — „Căci în ziua aceasta vi se va face ispășire, ca să vă curățiți"',
+  sukkot: 'Kohelet 7:14 — „În ziua binelui, fii bucuros; în ziua răului, ia aminte"',
+  elul: 'Shir HaShirim 6:3 — „Eu sunt al iubitului meu și iubitul meu este al meu" — אני לדודי ולדודי לי',
+  days_of_awe: 'Rambam, Hilchot Teshuvah 3:4 — „Fiecare om trebuie să se vadă ca și cum lumea e în echilibru perfect"',
+  tisha_bav: 'Eicha 1:1 — „Cum stă singură cetatea cea plină odinioară de popor"',
+  three_weeks: 'Talmud Yerushalmi — „Cel care deplânge Ierusalimul va fi martor la bucuria sa"',
+  rosh_chodesh: 'Sanhedrin 42a — „Cel care vede luna nouă spune binecuvântarea... ca și cum ar fi primit Shechina"',
+  sunday: 'Bereshit Rabbah 3:6 — „Lumina a fost creată în prima zi; nu soarele. Lumina vederii, nu a fizicii"',
+  monday: 'Bereshit Rabbah 4 — „Luni: ziua separației. Nu s-a spus ki tov — pentru că separarea nu e niciodată completă"',
+  tuesday: 'Talmud Bavli, Ta\'anit 29b — „Ki tov de două ori: pentru că lumea și cerul au venit împreună în marți"',
+  wednesday: 'Bereshit 1:14 — „Luminătorii pentru a deosebi ziua de noapte și pentru semne, și pentru vremi"',
+  thursday: 'Pirkei DeRabbi Eliezer — „Joi: ziua când peștii și păsările au primit binecuvântarea să se înmulțească"',
+  fast_minor: 'Zechariah 8:19 — „Postul celui de-al patrulea și al cincilea... vor deveni bucurie și veselie"',
+  default: 'Pirkei Avot 2:4 — „Al lui Hillel: nu te despărți de comunitate; nu te încrede în tine însuți până în ziua morții"',
+};
+
+function getSource(L1, dayOfWeek) {
+  if (L1.isShabbat) return SOURCES.shabbat;
+  if (L1.isErevShabbat) return SOURCES.erev_shabbat;
+  if (L1.isFast) return SOURCES.fast_minor;
+  if (L1.isRoshChodesh) return SOURCES.rosh_chodesh;
+  const h = L1.holiday || '';
+  if (/pesach|passover/i.test(h)) return SOURCES.pesach;
+  if (/shavuot/i.test(h)) return SOURCES.shavuot;
+  if (/rosh hashana/i.test(h)) return SOURCES.rosh_hashana;
+  if (/yom kippur/i.test(h)) return SOURCES.yom_kippur;
+  if (/sukkot/i.test(h)) return SOURCES.sukkot;
+  if (/tisha b'?av/i.test(h)) return SOURCES.tisha_bav;
+  if (L1.omerDay > 0) {
+    if (L1.omerDay <= 14) return SOURCES.omer_early;
+    if (L1.omerDay <= 35) return SOURCES.omer_mid;
+    return SOURCES.omer_late;
+  }
+  const m = L1.hdateObj?.monthNum || 0;
+  const d = L1.hdateObj?.day || 0;
+  // Elul = month 12
+  if (m === 12) return SOURCES.elul;
+  // Tishri 1-10 = days of awe
+  if (m === 1 && d <= 10) return SOURCES.days_of_awe;
+  // Three weeks: Tammuz 17 → Av 9 (months 10-11)
+  if ((m === 10 && d >= 17) || (m === 11 && d <= 9)) return SOURCES.three_weeks;
+  const dowSources = [SOURCES.sunday, SOURCES.monday, SOURCES.tuesday, SOURCES.wednesday, SOURCES.thursday, SOURCES.erev_shabbat, SOURCES.shabbat];
+  return dowSources[dayOfWeek] || SOURCES.default;
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  L5 — TRUTH CUT LIBRARY  (v2 — schema normalizată)
+//  88 obiecte, format uniform, gata de selecție
+// ═══════════════════════════════════════════════════════════
+const TC_LIBRARY = [
+  {"text":"Nu știi cu ce intri în săptămâna asta. Dar intri.","rhythm":"observe","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["timp","orientare"]},
+  {"text":"Lumina apare înainte să știi ce iluminează.","rhythm":"observe","mode":"universal","autonomy":"A","min_intensity":"low","source_family":"exodus","tags":["orientare","claritate"]},
+  {"text":"Timpul a început înainte să te aduni.","rhythm":"observe","mode":"universal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["timp","orientare"]},
+  {"text":"Ceva în tine cere distincție. Nu i-ai dat-o.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["stagnare","claritate"]},
+  {"text":"Ce nu separi la timp te va conduce încurcat.","rhythm":"discomfort","mode":"universal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["evitare","claritate"]},
+  {"text":"Nu ai spus încă lucrului pe nume.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["evitare","timp"]},
+  {"text":"Amâni pentru că finalul te obligă să vezi ce e real.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["evitare","claritate"],"editorial_marker":"first_strike"},
+  {"text":"Nu e confuzie. E refuzul de a spune lucrului pe nume.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["evitare","claritate"],"editorial_marker":"first_strike"},
+  {"text":"Nu ești blocat. Ești atașat.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"wilderness","tags":["atașament","stagnare"],"editorial_marker":"first_strike"},
+  {"text":"Recunoști mecanismul. Doar că nu în tine.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"covenant","tags":["ego","claritate"],"editorial_marker":"first_strike"},
+  {"text":"Te miști mult. Dar nu știi unde.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"wilderness","tags":["orientare","stagnare"]},
+  {"text":"Claritatea pe care o ai e mai incomodă decât confuzia.","rhythm":"discomfort","mode":"universal","autonomy":"A","min_intensity":"medium","source_family":"wilderness","tags":["claritate","evitare"]},
+  {"text":"Ai văzut. Și ai ales să nu te uiți din nou.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"wilderness","tags":["evitare","timp"]},
+  {"text":"Știi deja. Continui la fel.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"covenant","tags":["stagnare","timp"],"editorial_marker":"second_strike"},
+  {"text":"Adevărul nu mai e nou. Doar neascultat.","rhythm":"confrontation","mode":"universal","autonomy":"A","min_intensity":"medium","source_family":"wilderness","tags":["stagnare","claritate"],"editorial_marker":"second_strike"},
+  {"text":"Nu mai e neclar. Doar amânat conștient.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"covenant","tags":["timp","stagnare"],"editorial_marker":"second_strike"},
+  {"text":"Conversația pe care n-o ai costă mai mult decât crezi.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"covenant","tags":["relație","timp"],"editorial_marker":"second_strike"},
+  {"text":"Nu te oprești pentru că nu ai încredere că lumea merge fără tine.","rhythm":"cut","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"covenant","tags":["control","ego"]},
+  {"text":"Nu lipsea condiția. Lipsea decizia.","rhythm":"cut","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"exodus","tags":["libertate","claritate"]},
+  {"text":"Știi ce trebuie lăsat. Și îl ții.","rhythm":"cut","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"exodus","tags":["atașament","control"]},
+  {"text":"Shabbat arată cine ești fără productivitate.","rhythm":"rest","mode":"universal","autonomy":"A","min_intensity":"low","source_family":"rest","tags":["identitate","prezență"]},
+  {"text":"Nu te oprești pentru că ai terminat. Te oprești pentru că e Shabbat.","rhythm":"rest","mode":"universal","autonomy":"A","min_intensity":"low","source_family":"rest","tags":["control","prezență"]},
+  {"text":"Odihnești sau aștepți să se termine?","rhythm":"rest","mode":"personal","autonomy":"A","min_intensity":"low","source_family":"rest","tags":["prezență","libertate"]},
+  {"text":"Numeri zilele. Dar nu știi ce numeri.","rhythm":"observe","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"wilderness","tags":["timp","orientare"],"season_marker":"omer_w1"},
+  {"text":"Numeri zilele. Ele te numără și pe tine.","rhythm":"observe","mode":"universal","autonomy":"B","min_intensity":"medium","source_family":"exodus","tags":["timp","claritate"],"season_marker":"omer_w1"},
+  {"text":"Primele zile nu cer răspuns. Cer să admiți că ceva nu poate rămâne așa.","rhythm":"discomfort","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"wilderness","tags":["stagnare","claritate"],"season_marker":"omer_w1"},
+  {"text":"Te grăbești să schimbi ce nici nu ai privit.","rhythm":"discomfort","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"wilderness","tags":["ego","orientare"],"season_marker":"omer_w1"},
+  {"text":"Iubești. Dar nu eliberezi.","rhythm":"confrontation","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"covenant","tags":["atașament","control"],"season_marker":"omer_w2"},
+  {"text":"Fără limită, bunătatea ta protejează exact ce trebuia oprit.","rhythm":"confrontation","mode":"universal","autonomy":"B","min_intensity":"medium","source_family":"covenant","tags":["control","atașament"],"season_marker":"omer_w2"},
+  {"text":"Nu ești blocat de circumstanță. Ești blocat de ce ai decis că ești.","rhythm":"confrontation","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"wilderness","tags":["ego","identitate"],"season_marker":"omer_w2"},
+  {"text":"Ai numărat 42 de zile și nu te-ai întrebat de ce.","rhythm":"confrontation","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"wilderness","tags":["ego","timp"],"season_marker":"omer_w6"},
+  {"text":"Ce rămâne din tine când nu mai performezi?","rhythm":"confrontation","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["ego","identitate"],"season_marker":"omer_w6"},
+  {"text":"Prezența ta reală — oamenii o simt sau o tolerează?","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["relație","ego"],"season_marker":"omer_w6"},
+  {"text":"Încă numești iubire ceea ce nu poate lăsa liber.","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["control","atașament"],"season_marker":"omer_w6"},
+  {"text":"Ai fost dus până la Sinai. Nu înseamnă că vei primi.","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["ego","libertate"],"season_marker":"omer_w7","editorial_marker":"threshold_receiving"},
+  {"text":"49 de zile: ai ajuns? Sau ai numărat?","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["timp","ego"],"season_marker":"omer_w7","editorial_marker":"threshold_receiving"},
+  {"text":"Pregătirea nu se declară. Se recunoaște.","rhythm":"cut","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"covenant","tags":["ego","claritate"],"editorial_marker":"threshold_receiving"},
+  {"text":"Regele e în câmp. Tu ești unde?","rhythm":"observe","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"judgment","tags":["relație","orientare"],"season_marker":"elul_early"},
+  {"text":"Elul nu caută greșeala ta principală. Caută omul care a repetat-o.","rhythm":"observe","mode":"universal","autonomy":"B","min_intensity":"medium","source_family":"judgment","tags":["identitate","timp"],"season_marker":"elul_early"},
+  {"text":"Nu te-ai întors. Ai promis că te vei întoarce.","rhythm":"discomfort","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"judgment","tags":["timp","relație"],"season_marker":"elul_mid"},
+  {"text":"Ceri iertare cu un nume în minte. Pe al cui îl ții închis?","rhythm":"discomfort","mode":"personal","autonomy":"B","min_intensity":"medium","source_family":"covenant","tags":["relație","responsabilitate"],"season_marker":"elul_mid"},
+  {"text":"Nu te judeci. Te scuzi.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"judgment","tags":["ego","claritate"]},
+  {"text":"Nu ai uitat. Ai ales să nu faci.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"high","source_family":"judgment","tags":["timp","stagnare"],"season_marker":"elul_late"},
+  {"text":"Nu te-ai întors încă. Restul e vocabular.","rhythm":"confrontation","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"judgment","tags":["libertate","claritate"],"season_marker":"elul_late"},
+  {"text":"Scrisoarea nescrisă există. O știi tu, o știe El.","rhythm":"confrontation","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"covenant","tags":["relație","timp"],"season_marker":"elul_late"},
+  {"text":"Nu mai ai timp să fii pregătit. Ai timp să fii sincer.","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"judgment","tags":["timp","ego"],"season_marker":"elul_final","editorial_marker":"threshold_closing"},
+  {"text":"La sfârșit nu mai e vorba să adaugi. E vorba să nu te mai ascunzi.","rhythm":"cut","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"judgment","tags":["ego","claritate"],"editorial_marker":"threshold_closing"},
+  {"text":"Ceva cedează de ceva timp. Tu încă îi spui normal.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"fracture","tags":["stagnare","claritate"],"season_marker":"three_weeks"},
+  {"text":"Nu ai spart nimic. Ai lăsat să se spargă. Diferența contează.","rhythm":"discomfort","mode":"personal","autonomy":"A","min_intensity":"medium","source_family":"fracture","tags":["stagnare","responsabilitate"],"season_marker":"three_weeks"},
+  {"text":"Știi exact unde e fisura. Și continui ca și cum nu e acolo.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"high","source_family":"fracture","tags":["evitare","responsabilitate"],"season_marker":"three_weeks"},
+  {"text":"Normalitatea ta de după ruptură nu e vindecare. E adaptare la pierdere.","rhythm":"confrontation","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"fracture","tags":["ego","claritate"],"season_marker":"three_weeks"},
+  {"text":"Nu construiești împotriva distrugerii. O finanțezi în paralel.","rhythm":"confrontation","mode":"personal","autonomy":"A","min_intensity":"high","source_family":"fracture","tags":["stagnare","responsabilitate"],"season_marker":"three_weeks"},
+  {"text":"Prima breșă nu a ucis. Acceptarea ei în tăcere a ucis.","rhythm":"cut","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"fracture","tags":["responsabilitate","timp"],"season_marker":"three_weeks"},
+  {"text":"Distrugerea din afară găsește întotdeauna ceva pregătit înăuntru.","rhythm":"cut","mode":"universal","autonomy":"A","min_intensity":"high","source_family":"fracture","tags":["responsabilitate","ego"],"season_marker":"three_weeks"},
+  {"text":"Nu deplângi ce s-a pierdut. Deplângi că nu ai oprit când puteai.","rhythm":"cut","mode":"personal","autonomy":"B","min_intensity":"high","source_family":"fracture","tags":["timp","responsabilitate"],"season_marker":"three_weeks"},
+  {"text":"Vasul gol nu e eșec. E condiția primirii.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"exodus","tags":["libertate","identitate"],"context_key":"omer_day_49","context_behavior":"override"},
+  {"text":"Nu poți primi Torah ținând ceva în mâini.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"exodus","tags":["atașament","libertate"],"context_key":"omer_day_49","context_behavior":"override"},
+  {"text":"Mâinile pline nu primesc.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"exodus","tags":["atașament","claritate"],"context_key":"omer_day_49","context_behavior":"override"},
+  {"text":"Toate simbolurile au plecat. Tu ai rămas. Asta e suficient?","rhythm":"confrontation","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"covenant","tags":["prezență","identitate"],"context_key":"shmini_atzeret","context_behavior":"override"},
+  {"text":"Prezența fără motiv este forma cea mai rară de iubire.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"covenant","tags":["prezență","relație"],"context_key":"shmini_atzeret","context_behavior":"override"},
+  {"text":"A rămas cineva după ce spectacolul s-a terminat.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"covenant","tags":["prezență","relație"],"context_key":"shmini_atzeret","context_behavior":"override"},
+  {"text":"Știi exact ce trebuie să lași jos. Și știi și de ce nu l-ai lăsat.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["responsabilitate","claritate"],"context_key":"erev_yom_kippur","context_behavior":"override"},
+  {"text":"Teshuvah nu e regret. E schimbare de direcție.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["libertate","claritate"],"context_key":"erev_yom_kippur","context_behavior":"override"},
+  {"text":"Cartea rămâne deschisă până mâine. Nu până la infinit.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["timp","responsabilitate"],"context_key":"erev_yom_kippur","context_behavior":"override"},
+  {"text":"Cartea nu așteaptă să fii gata. Scrie ce ești acum.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["timp","identitate"],"context_key":"rosh_hashana_1","context_behavior":"override"},
+  {"text":"Știi diferența dintre cine ești și cine pretinzi că ești. Și cartea o știe.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["ego","identitate"],"context_key":"rosh_hashana_1","context_behavior":"override"},
+  {"text":"Nu judecata te face vulnerabil. Vizibilitatea.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["ego","prezență"],"context_key":"rosh_hashana_1","context_behavior":"override"},
+  {"text":"Ai dormit. Cartea nu.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["timp","responsabilitate"],"context_key":"rosh_hashana_2","context_behavior":"override"},
+  {"text":"Ieri ai descoperit că ești văzut. Azi nu mai ai scuza că nu știai.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["responsabilitate","claritate"],"context_key":"rosh_hashana_2","context_behavior":"override"},
+  {"text":"Nu e mai ușor a doua zi. E mai clar.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["claritate","timp"],"context_key":"rosh_hashana_2","context_behavior":"override"},
+  {"text":"Zidul nu cade dintr-o dată. Mai întâi lași prima breșă.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["responsabilitate","timp"],"context_key":"shiva_asar_tammuz","context_behavior":"override"},
+  {"text":"Știi exact unde e fisura. Și știi că o ignori.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["evitare","responsabilitate"],"context_key":"shiva_asar_tammuz","context_behavior":"override"},
+  {"text":"Lucrurile nu se distrug singure. Au nevoie de consimțământul tău tăcut.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["responsabilitate","stagnare"],"context_key":"shiva_asar_tammuz","context_behavior":"override"},
+  {"text":"Ceea ce tolerezi în fiecare zi construiește ceea ce vei plânge mai târziu.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["timp","responsabilitate"],"context_key":"asara_tevet","context_behavior":"override"},
+  {"text":"Nu știai că e un început. Dar îl vedeai.","rhythm":"confrontation","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["responsabilitate","claritate"],"context_key":"asara_tevet","context_behavior":"override"},
+  {"text":"Stabilitatea pe care o simți acum nu e dovadă că totul e bine.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"fracture","tags":["claritate","stagnare"],"context_key":"asara_tevet","context_behavior":"override"},
+  {"text":"Decretul nu s-a schimbat. Tu te-ai obișnuit cu el.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["responsabilitate","timp"],"context_key":"hoshana_rabbah","context_behavior":"override"},
+  {"text":"Sigilarea nu face zgomot. De aceea nu o auzi.","rhythm":"cut","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["claritate","timp"],"context_key":"hoshana_rabbah","context_behavior":"override"},
+  {"text":"Salcia nu are miros, nu are gust. Rămâi și tu fără ornament.","rhythm":"confrontation","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["identitate","prezență"],"context_key":"hoshana_rabbah","context_behavior":"override"},
+  {"text":"Anul s-a terminat. Noul an nu a început. Ce rămâne din tine în spațiul acesta?","rhythm":"confrontation","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"wilderness","tags":["identitate","prezență"],"context_key":"erev_rosh_hashana","context_behavior":"override"},
+  {"text":"Identitatea se construiește din context. Acum contextul lipsește.","rhythm":"confrontation","mode":"universal","autonomy":"C","min_intensity":"high","source_family":"wilderness","tags":["identitate","claritate"],"context_key":"erev_rosh_hashana","context_behavior":"override"},
+  {"text":"Nu ai intrat încă în judecată. Dar ești deja în fața ei.","rhythm":"cut","mode":"personal","autonomy":"C","min_intensity":"high","source_family":"judgment","tags":["responsabilitate","timp"],"context_key":"erev_rosh_hashana","context_behavior":"override"}
+];
+
+// ═══════════════════════════════════════════════════════════
+//  CALENDAR ENGINE — 3 rezolvere pure, fără side effects
+// ═══════════════════════════════════════════════════════════
+
+// Rezolver 1: context_key din data ebraică exactă
+function getContextKey(L1) {
+  const m = L1.hdateObj?.monthNum || 0;
+  const d = L1.hdateObj?.day || 0;
+  const h = L1.holiday || '';
+
+  // Tishri=1, Cheshvan=2, Kislev=3, Tevet=4, Shevat=5, Adar=6,
+  // Nisan=7, Iyar=8, Sivan=9, Tammuz=10, Av=11, Elul=12
+
+  // Suspend keys — produsul tace
+  if (m === 11 && d === 9) return { key: 'tisha_bav', behavior: 'suspend', suspension_type: 'absolute_mourning' };
+  // Erev YK ÎNAINTE de YK — "Erev Yom Kippur" ar match-ui /yom kippur/i altfel
+  if (/^erev yom kippur$/i.test(h) || (m === 1 && d === 9)) return { key: 'erev_yom_kippur', behavior: 'override' };
+  if (/^yom kippur$/i.test(h) || (m === 1 && d === 10)) return { key: 'yom_kippur', behavior: 'suspend', suspension_type: 'sacred_fullness' };
+
+  // Override keys — ritm săptămânal ignorat, Clasa C activă
+  if (L1.omerDay === 49) return { key: 'omer_day_49', behavior: 'override' };
+  if (m === 1 && d === 1) return { key: 'rosh_hashana_1', behavior: 'override' };
+  if (m === 1 && d === 2) return { key: 'rosh_hashana_2', behavior: 'override' };
+  if (m === 12 && d === 29) return { key: 'erev_rosh_hashana', behavior: 'override' };
+  if (m === 1 && d === 21) return { key: 'hoshana_rabbah', behavior: 'override' };
+  if (m === 1 && d === 22) return { key: 'shmini_atzeret', behavior: 'override' };
+  if (m === 10 && d === 17) return { key: 'shiva_asar_tammuz', behavior: 'override' };
+  if (m === 4 && d === 10) return { key: 'asara_tevet', behavior: 'override' }; // Tevet=luna 4
+
+  return null;
+}
+
+// Rezolver 2: profil sezon — intensitate + source_family_bias + preferred_modes
+function getSeasonProfile(L1, date) {
+  const m = L1.hdateObj?.monthNum || 0;
+  const d = L1.hdateObj?.day || 0;
+  const omerDay = L1.omerDay || 0;
+
+  // Omer — progresie pe 7 săptămâni
+  if (omerDay > 0) {
+    const week = Math.ceil(omerDay / 7);
+    const intensity = week <= 2 ? 'medium' : 'high';
+    const omerWeekKey = `omer_w${week}`;
+    return {
+      season: 'omer',
+      intensity,
+      season_marker: omerWeekKey,
+      source_family_bias: week <= 2 ? 'wilderness' : 'covenant',
+      preferred_modes: week <= 5 ? ['personal', 'universal'] : ['universal', 'personal'],
+      rhythm_weights: week <= 5
+        ? { observe: 1, discomfort: 2, confrontation: 3, cut: 2, rest: 1 }
+        : { observe: 0, discomfort: 1, confrontation: 2, cut: 4, rest: 1 },
+    };
+  }
+
+  // Elul (month 12)
+  if (m === 12) {
+    const phase = d <= 9 ? 'elul_early' : d <= 20 ? 'elul_mid' : d <= 27 ? 'elul_late' : 'elul_final';
+    return {
+      season: 'elul',
+      intensity: d <= 9 ? 'medium' : 'high',
+      season_marker: phase,
+      source_family_bias: 'judgment',
+      preferred_modes: d >= 20 ? ['universal', 'personal'] : ['personal', 'universal'],
+      rhythm_weights: { observe: 1, discomfort: 2, confrontation: 3, cut: d >= 20 ? 4 : 2, rest: 1 },
+    };
+  }
+
+  // Three Weeks: 17 Tammuz (Tammuz=10) → 9 Av (Av=11)
+  if ((m === 10 && d >= 17) || (m === 11 && d <= 9)) {
+    return {
+      season: 'three_weeks',
+      intensity: 'high',
+      season_marker: 'three_weeks',
+      source_family_bias: 'fracture',
+      preferred_modes: ['personal', 'universal'],
+      rhythm_weights: { observe: 0, discomfort: 2, confrontation: 3, cut: 3, rest: 1 },
+    };
+  }
+
+  // High Holidays intermediate (days 3-8 between RH and YK, Tishri=1)
+  if (m === 1 && d >= 3 && d <= 8) {
+    return {
+      season: 'high_holidays_intermediate',
+      intensity: 'high',
+      season_marker: 'high_holidays_intermediate',
+      source_family_bias: 'judgment',
+      preferred_modes: ['universal', 'personal'],
+      rhythm_weights: { observe: 1, discomfort: 2, confrontation: 3, cut: 3, rest: 1 },
+    };
+  }
+
+  // Sukkot / Purim / low seasons
+  if ((m === 1 && d >= 15 && d <= 21) || (m === 6 && d === 14)) {
+    return {
+      season: 'joyful',
+      intensity: 'low',
+      source_family_bias: 'rest',
+      preferred_modes: ['universal', 'personal'],
+      rhythm_weights: { observe: 3, discomfort: 1, confrontation: 1, cut: 0, rest: 3 },
+    };
+  }
+
+  // Ordinary time
+  return {
+    season: 'ordinary',
+    intensity: 'low',
+    source_family_bias: null,
+    preferred_modes: ['personal', 'universal'],
+    rhythm_weights: { observe: 1, discomfort: 2, confrontation: 2, cut: 1, rest: 1 },
+  };
+}
+
+// Rezolver 3: rhythm din ziua săptămânii
+function getWeekdayRhythm(dow) {
+  // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  const map = ['observe', 'discomfort', 'confrontation', 'discomfort', 'confrontation', 'cut', 'rest'];
+  return map[dow] || 'observe';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ENGINE V6 — FROZEN CORE
+//  Contract: keep engine behavior stable and extend via layers,
+//  adapters, UI, taxonomy review, or external products.
+//  Do not change pipeline semantics here without version bump.
+// ═══════════════════════════════════════════════════════════
+const TC_ENGINE_FREEZE = Object.freeze({
+  version: 'v6-frozen-core',
+  policy: 'extend-around-core',
+  mutable_layers: ['ui', 'content', 'context_blocks', 'language', 'taxonomy_audit', 'external_adapters'],
+  protected_layers: ['selection_pipeline', 'history_logic', 'anti_repetition', 'fallback_frame_rules'],
+});
+
+const TC_ENGINE_CFG = {
+  historyKey: 'yjd_tc_engine_history_v6',
+  maxHistory: 28,
+  sameTextLockDays: 21,
+  sameTagPenaltyWindow: 5,
+  sameSourcePenaltyWindow: 4,
+  sameRhythmPenaltyWindow: 3,
+};
+
+function tcHash(text='') {
+  let h = 0;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) - h + text.charCodeAt(i)) | 0;
+  return String(Math.abs(h));
+}
+
+function getEngineHistory() {
+  try {
+    const rows = Store.getJSON(TC_ENGINE_CFG.historyKey, []);
+    return Array.isArray(rows) ? rows : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveEngineHistory(history) {
+  Store.set(TC_ENGINE_CFG.historyKey, JSON.stringify((history || []).slice(0, TC_ENGINE_CFG.maxHistory)));
+}
+
+function rememberTruthCut(tc, ctx, date) {
+  if (!tc || tc._suspend) return;
+  const iso = date.toISOString().split('T')[0];
+  const history = getEngineHistory();
+  if (history[0]?.date === iso) return;
+  const next = [{
+    date: iso,
+    hash: tcHash(tc.text || ''),
+    text: tc.text || '',
+    rhythm: tc.rhythm || '',
+    mode: tc.mode || '',
+    source_family: tc.source_family || '',
+    tags: Array.isArray(tc.tags) ? tc.tags.slice(0, 3) : [],
+    intensity: tc.min_intensity || 'low',
+    context_key: ctx?.context_key || null,
+    season: ctx?.season || null,
+    selected_rhythm: ctx?.selected_rhythm || ctx?.rhythm || null,
+  }, ...history].slice(0, TC_ENGINE_CFG.maxHistory);
+  saveEngineHistory(next);
+}
+
+function daysBetweenISO(a, b) {
+  const da = new Date(`${a}T00:00:00`);
+  const db = new Date(`${b}T00:00:00`);
+  return Math.round((db - da) / 86400000);
+}
+
+function getUserProfile() {
+  const saved = Store.get('yjd_profile_intensity', '').trim();
+  return {
+    intensityBias: saved === 'soft' ? -1 : saved === 'intense' ? 1 : 0,
+  };
+}
+
+function shiftIntensity(level, delta) {
+  const order = ['low', 'medium', 'high'];
+  const idx = Math.max(0, Math.min(order.length - 1, order.indexOf(level) + delta));
+  return order[idx] || level;
+}
+
+function countRecent(history, predicate, limit) {
+  return history.slice(0, limit).filter(predicate).length;
+}
+
+function resolveDesiredRhythm(ctx, history) {
+  const base = ctx.rhythm;
+  if (ctx.context_behavior === 'override' || ctx.context_behavior === 'suspend') return base;
+  if (!history.length) return base;
+
+  const last = history[0];
+  const last2 = history.slice(0, 2);
+  const sameTwice = last2.length === 2 && last2.every(x => x.rhythm === base);
+  const recentCuts = countRecent(history, x => x.rhythm === 'cut', 4);
+  const recentConfront = countRecent(history, x => x.rhythm === 'confrontation', 4);
+  const recentHighPressure = countRecent(history, x => ['cut', 'confrontation'].includes(x.rhythm), 3);
+
+  // Friday (Erev Shabbat) and Shabbat keep sacred rhythm intact — never modified.
+  if (base === 'cut' || base === 'rest') return base;
+
+  // If same weekday rhythm repeated too harshly, soften one step.
+  if (sameTwice && (base === 'confrontation' || base === 'discomfort')) {
+    return base === 'confrontation' ? 'discomfort' : 'observe';
+  }
+
+  // Pressure limiter.
+  if (recentCuts >= 2 && base === 'confrontation') return 'discomfort';
+  if (recentConfront >= 3 && base === 'confrontation') return 'observe';
+  if (recentHighPressure >= 3 && base !== 'observe') return 'observe';
+
+  // Joyful season should not escalate unless calendar override forces it.
+  if (ctx.season === 'joyful' && ['confrontation', 'cut'].includes(base)) return 'observe';
+
+  return base;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RESOLVED DAY CONTEXT
+// ═══════════════════════════════════════════════════════════
+function resolveContext(L1, date) {
+  const user = getUserProfile();
+  const ctx = {
+    date,
+    weekday: date.getDay(),
+    rhythm: getWeekdayRhythm(date.getDay()),
+    selected_rhythm: null,
+    season: null,
+    intensity: 'low',
+    preferred_modes: ['personal', 'universal'],
+    source_family_bias: null,
+    rhythm_weights: null,
+    season_marker: null,
+    context_key: null,
+    context_behavior: null,
+    suspension_type: null,
+    isShabbat: L1.isShabbat || date.getDay() === 6,
+    isErevShabbat: L1.isErevShabbat || date.getDay() === 5,
+    user,
+  };
+
+  // Context key check (highest priority)
+  const ck = getContextKey(L1);
+  if (ck) {
+    ctx.context_key = ck.key;
+    ctx.context_behavior = ck.behavior;
+    ctx.suspension_type = ck.suspension_type || null;
+  }
+
+  // Season profile
+  const sp = getSeasonProfile(L1, date);
+  ctx.season = sp.season;
+  ctx.intensity = shiftIntensity(sp.intensity, user.intensityBias || 0);
+  ctx.preferred_modes = sp.preferred_modes;
+  ctx.source_family_bias = sp.source_family_bias;
+  ctx.rhythm_weights = sp.rhythm_weights;
+  ctx.season_marker = sp.season_marker || null;
+
+  const history = getEngineHistory();
+  ctx.history = history;
+  ctx.selected_rhythm = resolveDesiredRhythm(ctx, history);
+
+  return ctx;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SCORER — pură, deterministic + memory aware
+// ═══════════════════════════════════════════════════════════
+function scoreTruthCut(tc, ctx) {
+  let score = 0;
+  const history = ctx.history || [];
+  const todayISO = ctx.date.toISOString().split('T')[0];
+
+  // Rhythm match — cel mai important
+  const rhythmW = ctx.rhythm_weights || {};
+  score += (rhythmW[tc.rhythm] || 0) * 4;
+  if (tc.rhythm === ctx.selected_rhythm) score += 8;
+  else if (tc.rhythm === ctx.rhythm) score += 3;
+
+  // Intensity fit
+  const intensityOrder = { low: 1, medium: 2, high: 3 };
+  const ctxI = intensityOrder[ctx.intensity] || 1;
+  const tcI = intensityOrder[tc.min_intensity] || 1;
+  if (tcI <= ctxI) score += 3;
+  if (tcI === ctxI) score += 2;
+  if (tcI > ctxI) score -= 10;
+
+  // Mode preference
+  const modeRank = ctx.preferred_modes.indexOf(tc.mode);
+  if (modeRank === 0) score += 2;
+  else if (modeRank === 1) score += 1;
+
+  // Source family affinity
+  if (ctx.source_family_bias && tc.source_family === ctx.source_family_bias) score += 2;
+
+  // Season marker match for class B
+  if (tc.autonomy === 'B' && tc.season_marker && tc.season_marker === ctx.season_marker) score += 4;
+
+  // Autonomy preference
+  if (tc.autonomy === 'A' && ctx.season === 'ordinary') score += 1;
+  if (tc.autonomy === 'B' && ctx.season !== 'ordinary' && ctx.intensity !== 'low') score += 2;
+  if (tc.autonomy === 'B' && ctx.intensity === 'low') score -= 4;
+
+  // Rest day logic
+  if (ctx.selected_rhythm === 'rest' && tc.rhythm !== 'rest') score -= 10;
+  if (ctx.selected_rhythm === 'rest' && tc.rhythm === 'rest') score += 8;
+
+  // Anti repetition — exact text lock
+  const sameText = history.find(x => x.hash === tcHash(tc.text || ''));
+  if (sameText) {
+    const age = daysBetweenISO(sameText.date, todayISO);
+    if (age <= TC_ENGINE_CFG.sameTextLockDays) score -= 100;
+    else score -= Math.max(8 - Math.floor(age / 7), 0);
+  }
+
+  // Anti repetition — same tag cluster / source / rhythm pressure
+  const tags = Array.isArray(tc.tags) ? tc.tags : [];
+  const recentTagHits = countRecent(history, x => (x.tags || []).some(t => tags.includes(t)), TC_ENGINE_CFG.sameTagPenaltyWindow);
+  const recentSourceHits = countRecent(history, x => x.source_family && x.source_family === tc.source_family, TC_ENGINE_CFG.sameSourcePenaltyWindow);
+  const recentRhythmHits = countRecent(history, x => x.rhythm === tc.rhythm, TC_ENGINE_CFG.sameRhythmPenaltyWindow);
+
+  score -= recentTagHits * 4;
+  score -= recentSourceHits * 3;
+  score -= recentRhythmHits * 2;
+
+  // Reward novelty inside the same top bucket.
+  if (!sameText && recentTagHits === 0) score += 3;
+
+  return score;
+}
+
+function chooseFromBucket(bucket, date, history) {
+  if (!bucket.length) return null;
+  const recentHashes = new Set((history || []).slice(0, 7).map(x => x.hash));
+  const fresh = bucket.filter(tc => !recentHashes.has(tcHash(tc.text || '')));
+  const pool = fresh.length ? fresh : bucket;
+  const doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  const seed = Math.abs((doy * 2654435761) ^ pool.length);
+  return pool[seed % pool.length];
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PIPELINE PRINCIPALE — suspend > override > score > fallback
+// ═══════════════════════════════════════════════════════════
+function selectTruthCut(L1, date) {
+  // FROZEN PIPELINE ORDER:
+  // 1) resolve context
+  // 2) suspend / override
+  // 3) frame compatibility
+  // 4) hard constraints
+  // 5) weighted scoring + anti-repetition
+  // 6) fallback through compatible pool only
+  //
+  // Extend around this core. Do not silently change semantics here.
+  const ctx = resolveContext(L1, date);
+
+  // PRIORITY 1: SUSPEND — nimic nu trece peste asta
+  if (ctx.context_behavior === 'suspend') {
+    return { _suspend: true, _suspension_type: ctx.suspension_type, _context_key: ctx.context_key, _ctx: ctx };
+  }
+
+  // PRIORITY 2: OVERRIDE — Clasa C pentru context_key exact
+  if (ctx.context_behavior === 'override') {
+    const classC = TC_LIBRARY.filter(tc =>
+      tc.autonomy === 'C' && tc.context_key === ctx.context_key
+    );
+    if (classC.length > 0) {
+      const picked = chooseFromBucket(classC, date, ctx.history);
+      if (picked) {
+        picked._ctx = ctx;
+        return picked;
+      }
+    }
+  }
+
+  // PRIORITY 3: SCORE + BUCKET DETERMINIST + ANTI-REPETITION
+
+  // Frame compatibility — non-contamination rule (Regula 2)
+  // Un TC nu poate conține cadrul altei zile decât cea curentă.
+  // FRAME GATE:
+  // Protects sacred/temporal non-contamination across weekday, Erev Shabbat, and Shabbat.
+  // This is structural logic, not semantic AI inference.
+  function isFrameCompatible(tc, ctx) {
+    const isShabbat = ctx.selected_rhythm === 'rest';
+    const isErevShabbat = L1.isErevShabbat && !isShabbat;
+    const isWeekday = !isShabbat && !isErevShabbat;
+
+    // Pe Shabbat: permite DOAR rest
+    if (isShabbat) {
+      if (tc.rhythm !== 'rest') return false;
+      return true;
+    }
+
+    // Pe Erev Shabbat: permite pregătire/tranziție — blochează rest complet și presiune dură
+    if (isErevShabbat) {
+      if (tc.rhythm === 'rest') return false;
+      if (tc.source_family === 'rest') return false;
+      return true;
+    }
+
+    // Pe zi normală: blochează TC-urile de Shabbat / rest sacru
+    if (isWeekday) {
+      if (tc.rhythm === 'rest') return false;
+      if (tc.source_family === 'rest') return false;
+      // Clasa B cu season_marker necesită sezon activ corespunzător
+      // Dacă ctx.season_marker e null (ordinary season), niciun B sezonier nu trece
+      if (tc.autonomy === 'B' && tc.season_marker) {
+        if (!ctx.season_marker || tc.season_marker !== ctx.season_marker) return false;
+      }
+      return true;
+    }
+
+    return true;
+  }
+
+  const eligible = TC_LIBRARY.filter(tc => {
+    if (tc.autonomy === 'C') return false;
+    if (!isFrameCompatible(tc, ctx)) return false;
+    if (tc.autonomy === 'B' && ctx.intensity === 'low') return false;
+    const intensityOrder = { low: 1, medium: 2, high: 3 };
+    if ((intensityOrder[tc.min_intensity] || 1) > (intensityOrder[ctx.intensity] || 1)) return false;
+    return true;
+  });
+
+  if (eligible.length === 0) {
+    const fb = _fallback(date, ctx);
+    fb._ctx = ctx;
+    return fb;
+  }
+
+  const scored = eligible.map(tc => ({ tc, score: scoreTruthCut(tc, ctx) }));
+  scored.sort((a, b) => b.score - a.score);
+
+  const maxScore = scored[0].score;
+  const bucket = scored.filter(x => x.score >= maxScore - 2).map(x => x.tc);
+  const picked = chooseFromBucket(bucket, date, ctx.history) || scored[0].tc;
+  picked._ctx = ctx;
+  return picked;
+}
+
+// Fallback: cel mai simplu A cu low/medium intensity, frame-compatible
+function _fallback(date, ctx = {}) {
+  const isShabbat = ctx.selected_rhythm === 'rest';
+  const isErevShabbat = !isShabbat && (ctx.isErevShabbat || date.getDay() === 5);
+  const pool = TC_LIBRARY.filter(tc => {
+    if (tc.autonomy !== 'A') return false;
+    if (!['low', 'medium'].includes(tc.min_intensity)) return false;
+    if (isShabbat) return tc.rhythm === 'rest';
+    if (isErevShabbat) return tc.rhythm !== 'rest' && tc.source_family !== 'rest';
+    // zi normală
+    return tc.rhythm !== 'rest' && tc.source_family !== 'rest';
+  });
+  const picked = chooseFromBucket(pool, date, ctx.history || []) || pool[0] || TC_LIBRARY[0];
+  return picked;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ECHO — seara (derivat din Truth Cut dimineața)
+// ═══════════════════════════════════════════════════════════
+function buildEcho(tc) {
+  if (!tc || tc._suspend) return '—';
+  // Echo derivat din primul tag al propoziției
+  const tag = (tc.tags && tc.tags[0]) || '';
+  const echoes = {
+    control: 'lumea a mers fără tine.',
+    ego: 'nu ți-ai cerut scuze de la tine însuți.',
+    libertate: 'ai ales. chiar dacă nu ai numit-o alegere.',
+    atașament: 'ce ai ținut — ți-a servit astăzi?',
+    timp: 'ziua s-a terminat. ce ai ales să nu faci?',
+    relație: 'oamenii cu care ai fost astăzi — i-ai văzut?',
+    stagnare: 'nimic nu s-a schimbat. sau poate un singur lucru.',
+    claritate: 'ai văzut. ce faci cu asta?',
+    evitare: 'ce ai evitat astăzi — mai e acolo.',
+    responsabilitate: 'știi. și acum?',
+    identitate: 'cine ai fost astăzi fără roluri?',
+    orientare: 'unde ești acum față de dimineață?',
+    prezență: 'ai fost prezent sau ai așteptat?',
+    credință: 'ai tăcut sau ai ascultat?',
+  };
+  // Mode-dependent echo: universal = cold law, personal = cold question
+  const base = echoes[tag] || '—';
+  if (tc.mode === 'universal') {
+    const universalEchoes = {
+      control: 'controlul nu a ținut lumea pe loc.',
+      ego: 'adevărul nu s-a schimbat cu ce ai crezut despre el.',
+      libertate: 'alegerea a existat. indiferent de ce ai spus.',
+      atașament: 'ce ai ținut nu a ținut la tine.',
+      timp: 'ziua s-a terminat.',
+      relație: 'prezența se simte sau nu se simte.',
+      stagnare: 'nimic nu s-a mișcat singur.',
+      claritate: 'claritatea nu dispare dacă o ignori.',
+      responsabilitate: 'a fost. indiferent dacă l-ai recunoscut.',
+    };
+    return universalEchoes[tag] || base;
+  }
+  return base;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  L1 — SACRED ENGINE (Hebcal API)
+// ═══════════════════════════════════════════════════════════
+
+const Store = {
+  get(key, fallback='') {
+    try {
+      const v = localStorage.getItem(key);
+      return v == null ? fallback : v;
+    } catch (e) { return fallback; }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      // SecurityError (private mode), QuotaExceededError, or any storage block
+      // Degradare graceful — anti-repetition pierde persistența, dar aplicația continuă
+      console.warn('[Store.set] localStorage unavailable:', e.name, key);
+    }
+  },
+  getJSON(key, fallback) {
+    try {
+      const raw = this.get(key, null);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+};
+function safeRevealApp(){
+  const load=document.getElementById('loadScreen');
+  const app=document.getElementById('app');
+  if(load) load.classList.add('fade');
+  setTimeout(()=>{ if(load) load.style.display='none'; if(app) app.classList.add('on'); },700);
+}
+function renderFatalFallback(msg){
+  const t=document.getElementById('hTitle');
+  const te=document.getElementById('hTension');
+  const m=document.getElementById('hMeaning');
+  const a=document.getElementById('hAction');
+  if(t) t.textContent='Your Jewish Day · Safe Mode';
+  if(te) te.textContent='Motorul a întâlnit o eroare de browser, dar aplicația a evitat blocajul total.';
+  if(m) m.textContent=msg || 'Structura originală a fost păstrată, cu protecții minime pentru pornire.';
+  if(a) a.textContent='Reîncarcă fișierul sau rulează prin localhost pentru fetch live.';
+  const sdot=document.getElementById('sdot');
+  const calTag=document.getElementById('calTag');
+  if(sdot) sdot.className='sdot err';
+  if(calTag) calTag.textContent='Safe mode';
+}
+
+const SACRED_CFG = {
+  LAT: 47.745, LON: 26.667, TZ: 'Europe/Bucharest', CANDLE: 30,
+};
+
+let L1 = {
+  hdate:null, hdateHeb:null, hdateObj:null,
+  holiday:null, holidayHeb:null, holidaySubcat:null,
+  isYomTov:false, isCholHaMoed:false, isFast:false,
+  isRoshChodesh:false, isShabbat:false, isErevShabbat:false,
+  omerDay:0, omerHeb:null, parasha:null, parashaHeb:null,
+  dafYomi:null, shabbatCandles:null, shabbatHavdala:null,
+};
+
+function hebrewDateIntl(date) {
+  try {
+    const fmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {day:'numeric',month:'long',year:'numeric'});
+    const parts = {};
+    (fmt.formatToParts(date) || []).forEach(x => parts[x.type] = x.value);
+    // Guard strict: validează că output-ul Intl e complet și parsabil
+    const dayNum = parseInt(parts.day);
+    const yearNum = parseInt(parts.year);
+    if (!parts.month || !Number.isFinite(dayNum) || dayNum <= 0 || !Number.isFinite(yearNum) || yearNum <= 0) {
+      throw new Error('Intl hebrew incomplete');
+    }
+    const monthMap = {'תשרי':1,'חשוון':2,'כסלו':3,'טבת':4,'שבט':5,'אדר':6,'אדר א׳':6,'אדר ב׳':7,'ניסן':7,'אייר':8,'סיוון':9,'תמוז':10,'אב':11,'אלול':12};
+    const monthEnMap = {'תשרי':'Tishri','חשוון':'Cheshvan','כסלו':'Kislev','טבת':'Tevet','שבט':'Shevat','אדר':'Adar','ניסן':'Nisan','אייר':'Iyar','סיוון':'Sivan','תמוז':'Tammuz','אב':'Av','אלול':'Elul'};
+    const mRaw = (parts.month||'').trim();
+    let mNum = 0, mEn = mRaw || 'Fallback';
+    for (const [k,v] of Object.entries(monthMap)) { if (mRaw.includes(k.replace(/[״׳]/g,''))) { mNum=v; break; } }
+    for (const [k,v] of Object.entries(monthEnMap)) { if (mRaw.includes(k.replace(/[״׳]/g,''))) { mEn=v; break; } }
+    return { day:parseInt(parts.day)||date.getDate(), monthHe:parts.month||'', monthEn:mEn, year:parseInt(parts.year)||date.getFullYear(), monthNum:mNum };
+  } catch (e) {
+    console.warn('Hebrew Intl fallback', e);
+    return { day:date.getDate(), monthHe:'', monthEn:'Fallback', year:date.getFullYear(), monthNum:0 };
+  }
+}
+
+async function fetchHebcal(date) {
+  const s = new Date(date); s.setDate(s.getDate()-1);
+  const e = new Date(date); e.setDate(e.getDate()+8);
+  const f = d => d.toISOString().split('T')[0];
+  const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&nx=on&mf=on&ss=on&mod=on&s=on&o=on&F=on&d=on&c=on&geo=pos&latitude=${SACRED_CFG.LAT}&longitude=${SACRED_CFG.LON}&tzid=${SACRED_CFG.TZ}&b=${SACRED_CFG.CANDLE}&M=on&i=off&leyning=off&start=${f(s)}&end=${f(e)}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(()=>controller.abort(),5000);
+  try {
+    const r = await fetch(url,{signal:controller.signal,cache:'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } finally { clearTimeout(timeout); }
+}
+
+function parseHebcal(data, date) {
+  const tod = date.toISOString().split('T')[0];
+  const items = data.items || [];
+  L1.hdateObj = hebrewDateIntl(date);
+
+  const hdItem = items.find(i => i.category==='d' && i.date===tod);
+  L1.hdate = hdItem?.hdate || `${L1.hdateObj.day} ${L1.hdateObj.monthEn} ${L1.hdateObj.year}`;
+  const hn = ['','א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח','יט','כ','כא','כב','כג','כד','כה','כו','כז','כח','כט','ל'];
+  L1.hdateHeb = hdItem?.hebrew || `${hn[L1.hdateObj.day]||L1.hdateObj.day} ${L1.hdateObj.monthHe}`;
+
+  const tod_items = items.filter(i => i.date === tod);
+  const hol = tod_items.find(i => i.category==='holiday');
+  if (hol) { L1.holiday=hol.title; L1.holidayHeb=hol.hebrew||''; L1.holidaySubcat=hol.subcat||'major'; L1.isYomTov=hol.subcat==='major'; L1.isCholHaMoed=/chol.ha.?moed/i.test(hol.title); L1.isFast=hol.subcat==='fast'; }
+  L1.isRoshChodesh = !!(tod_items.find(i => /rosh.chodesh/i.test(i.title) || i.category==='roshchodesh'));
+  if (!L1.isFast) L1.isFast = !!(tod_items.find(i => i.subcat==='fast' || i.subcat==='minor'));
+  const omer = tod_items.find(i => i.category==='omer');
+  if (omer) {
+    const rawOmer = omer.omer;
+    const parsedOmer = Number.parseInt(rawOmer, 10);
+    L1.omerDay = Number.isFinite(parsedOmer) ? parsedOmer : 0;
+    L1.omerHeb = omer.hebrew || '';
+  }
+  const par = items.find(i => i.category==='parashat');
+  if (par) { L1.parasha=par.title.replace(/^Parashat\s+/,''); L1.parashaHeb=(par.hebrew||'').replace(/^פרשת\s+/,''); }
+  const daf = tod_items.find(i => i.category==='dafyomi');
+  if (daf) L1.dafYomi = daf.title;
+  L1.shabbatCandles = items.find(i => i.category==='candles' && new Date(i.date)>=date)?.date || null;
+  L1.shabbatHavdala = items.find(i => i.category==='havdalah' && new Date(i.date)>=date)?.date || null;
+  L1.isShabbat = date.getDay()===6;
+  L1.isErevShabbat = date.getDay()===5;
+}
+
+function renderL1Panel() {
+  document.getElementById('s1').textContent = L1.hdate || '—';
+  document.getElementById('s2').textContent = L1.hdateHeb || '—';
+  const h3 = document.getElementById('s3');
+  const val = L1.holiday || (L1.isShabbat?'Shabbat Kodesh':'—');
+  h3.textContent = val;
+  h3.className = L1.holiday||L1.isShabbat ? 'sv tg' : 'sv';
+  const types = [];
+  if (L1.isYomTov) types.push('Yom Tov');
+  if (L1.isCholHaMoed) types.push('Chol HaMoed');
+  if (L1.isRoshChodesh) types.push('Rosh Chodesh');
+  if (L1.isFast) types.push('Fast');
+  if (L1.isShabbat) types.push('Shabbat');
+  document.getElementById('s4').textContent = types.join(' · ') || 'Ordinary weekday';
+  document.getElementById('s5').textContent = L1.omerDay > 0 ? `Ziua ${L1.omerDay}` : '—';
+  document.getElementById('s6').textContent = L1.dafYomi || '—';
+  document.getElementById('sdot').className = 'sdot';
+  document.getElementById('calTag').textContent = 'Hebcal ✓';
+}
+
+
+const WEEKDAY_MIRROR = [
+  {en:'Sunday', tr:'Yom Rishon', he:'יום ראשון'},
+  {en:'Monday', tr:'Yom Sheni', he:'יום שני'},
+  {en:'Tuesday', tr:'Yom Shlishi', he:'יום שלישי'},
+  {en:'Wednesday', tr:'Yom Revi‘i', he:'יום רביעי'},
+  {en:'Thursday', tr:'Yom Chamishi', he:'יום חמישי'},
+  {en:'Friday', tr:'Yom Shishi', he:'יום שישי'},
+  {en:'Shabbat', tr:'Shabbat', he:'שבת'}
+];
+const MONTH_TR = {Tishri:'Tishri',Cheshvan:'Cheshvan',Kislev:'Kislev',Tevet:'Tevet',Shevat:'Shevat',Adar:'Adar',Nisan:'Nisan',Iyar:'Iyar',Sivan:'Sivan',Tammuz:'Tammuz',Av:'Av',Elul:'Elul'};
+const TERM_BANK = {
+  shabbat:[
+    {he:'שבת',tr:'Shabbat',en:'Sabbath',mini:'From the Hebrew root ש-ב-ת, “to cease, to stop.”'},
+    {he:'הבדלה',tr:'Havdalah',en:'Separation',mini:'The closing ritual that marks the exit of Shabbat.'},
+    {he:'קידוש',tr:'Kiddush',en:'Sanctification',mini:'Blessing over wine that sanctifies the day.'}
+  ],
+  erev:[
+    {he:'ערב שבת',tr:'Erev Shabbat',en:'Shabbat eve',mini:'The threshold before Shabbat begins.'},
+    {he:'הדלקת נרות',tr:'Hadlakat Nerot',en:'Candle lighting',mini:'The act that marks entry into sacred time.'},
+    {he:'הכנה',tr:'Hachanah',en:'Preparation',mini:'Preparing body, home, and mind before the day enters.'}
+  ],
+  yomtov:[
+    {he:'יום טוב',tr:'Yom Tov',en:'Festival day',mini:'A sacred festival day with its own halachic frame.'},
+    {he:'קידוש',tr:'Kiddush',en:'Sanctification',mini:'Blessing over wine for sacred entry.'},
+    {he:'מועד',tr:'Moed',en:'Appointed time',mini:'A set sacred time in the Jewish calendar.'}
+  ],
+  fast:[
+    {he:'תענית',tr:'Ta’anit',en:'Fast',mini:'A day of affliction, restraint, and return.'},
+    {he:'תשובה',tr:'Teshuvah',en:'Return',mini:'Returning inward, morally and spiritually.'},
+    {he:'סליחה',tr:'Selichah',en:'Forgiveness',mini:'The language of mercy and turning back.'}
+  ],
+  roshchodesh:[
+    {he:'ראש חודש',tr:'Rosh Chodesh',en:'New month',mini:'The beginning of a new Hebrew month.'},
+    {he:'לבנה',tr:'Levanah',en:'Moon',mini:'The month is renewed through lunar time.'},
+    {he:'חידוש',tr:'Chidush',en:'Renewal',mini:'The inner quality of beginning again.'}
+  ],
+  ordinary:[
+    {he:'חול',tr:'Chol',en:'Ordinary day',mini:'A regular day inside the sacred rhythm of the week.'},
+    {he:'דרך',tr:'Derekh',en:'Way / path',mini:'Movement, conduct, and direction through the day.'},
+    {he:'כוונה',tr:'Kavanah',en:'Intention',mini:'The inner orientation you bring into action.'}
+  ]
+};
+function pickFrameState(){
+  if (L1.isShabbat) return 'shabbat';
+  if (L1.isErevShabbat) return 'erev';
+  if (L1.isYomTov) return 'yomtov';
+  if (L1.isFast) return 'fast';
+  if (L1.isRoshChodesh) return 'roshchodesh';
+  return 'ordinary';
+}
+function getFrameContent(){
+  const state = pickFrameState();
+  const base = {
+    ordinary:{badge:'Sacred weekday / Yom Chol', what:'An ordinary weekday inside the covenantal order of Torah, mitzvah, and sacred time.', ask:'Avodah, kavanah, honest action, and faithful movement inside the real duties of the day.', permit:'Work, building, speech, earning, repair, decision, and responsibility when held inside halachic dignity.', forbid:'Living the day as spiritually ownerless, empty, evasive, or cut off from God's order.', bring:'A field of service in which ordinary action can still become avodah when directed with truth.'},
+    erev:{badge:'Erev Shabbat', what:'The holy threshold in which the weekday closes and Shabbat is prepared to enter.', ask:'Hachanah — preparation of home, table, body, time, and inner state before the entrance of Shabbat.', permit:'Necessary preparation: candles, table, food, clothing, order, reconciliation, and whatever must be ready before sunset.', forbid:'Dragging confusion, delay, scattered labor, and unfinished inward noise across the boundary of sacred time.', bring:'The turning of the soul from labor toward kedushah; from weekday pressure toward readiness to receive.'},
+    shabbat:{badge:'Shabbat', what:'The seventh day sanctified by God: cessation, kedushah, presence, table, prayer, family, and rest.', ask:'Shevitah — to cease, receive, remember, bless, and dwell inside the holiness of the day.', permit:'Prayer, kiddush, meals, song, Torah, family presence, listening, blessing, and menuchah.', forbid:'Melachah, control, fixing, producing, and carrying weekday mastery into the day of covenantal rest.', bring:'A world received from God rather than sustained by your intervention; a dwelling of presence before God, with family, soul, and sacred time.'},
+    yomtov:{badge:L1.holiday || 'Yom Tov', what:'A sacred festival day fixed in the Jewish calendar and entered through command, memory, and observance.', ask:'To receive the appointed time according to its mitzvot, prayers, story, and halachic boundary.', permit:'Festival prayer, seudah, family gathering, remembrance, rejoicing, and the practices proper to that moed.', forbid:'Reducing the festival to mood, symbolism, or inspiration detached from its commanded form.', bring:'Collective memory, covenant identity, and a sanctified meeting with Jewish time.'},
+    fast:{badge:L1.holiday || 'Fast day', what:'A day of ta'anit: restraint, return, repentance, and moral exposure before God.', ask:'Humility, teshuvah, examination, confession, restraint, and truth without ornament.', permit:'Prayer, selichah, silence, inward accounting, and the stripping away of avoidance.', forbid:'Indifference, indulgence, denial, and the refusal to face what the day reveals.', bring:'Sobriety of soul, moral clarity, and a broken-open space in which return becomes possible.'},
+    roshchodesh:{badge:'Rosh Chodesh', what:'The head of the month: renewal in the rhythm of Israel's lunar time.', ask:'To notice renewal, mark sacred cycle, and begin again with gratitude and awareness.', permit:'Marking the new month, added prayer, gratitude, recalibration, and renewed intention.', forbid:'Living as if time were flat, interchangeable, and untouched by sacred renewal.', bring:'Chidush — the gift of beginning again under the sign of covenant time.'}
+  };
+  return {state, ...(base[state] || base.ordinary), terms: TERM_BANK[state] || TERM_BANK.ordinary};
+}
+function renderContextFrame(date){
+  const frame = getFrameContent();
+  const wd = WEEKDAY_MIRROR[date.getDay()];
+  const monthEn = (L1.hdateObj && L1.hdateObj.monthEn) ? L1.hdateObj.monthEn : '';
+  const hDay = (L1.hdateObj && L1.hdateObj.day) ? L1.hdateObj.day : '';
+  const hYear = (L1.hdateObj && L1.hdateObj.year) ? L1.hdateObj.year : '';
+  const greg = date.toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const hebTr = [hDay, MONTH_TR[monthEn] || monthEn, hYear].filter(Boolean).join(' ');
+  $('#ctxBadge').textContent = frame.badge;
+  $('#mWeekEn').textContent = wd.en;
+  $('#mWeekTr').textContent = wd.tr;
+  $('#mWeekHe').textContent = wd.he;
+  $('#mDateEn').textContent = greg;
+  $('#mDateTr').textContent = hebTr || L1.hdate || '—';
+  $('#mDateHe').textContent = L1.hdateHeb || '—';
+  $('#rWhat').textContent = frame.what;
+  $('#rAsk').textContent = frame.ask;
+  $('#rPermit').textContent = frame.permit;
+  $('#rForbid').textContent = frame.forbid;
+  $('#rBring').textContent = frame.bring;
+  const strip = $('#termsStrip');
+  strip.innerHTML = frame.terms.map(t=>`<article class="term-card"><div class="term-he">${t.he}</div><div class="term-tr">${t.tr}</div><div class="term-en">${t.en}</div><div class="term-mini">${t.mini}</div></article>`).join('');
+  const guideParts = [];
+  const times = [];
+  if (L1.shabbatCandles) times.push(`<li>Candle lighting: ${fmtClock(L1.shabbatCandles)}</li>`);
+  if (L1.shabbatHavdala) times.push(`<li>Havdalah: ${fmtClock(L1.shabbatHavdala)}</li>`);
+  guideParts.push(`<div class="guide-grid">
+    <section class="guide-card"><h4>Sacred state</h4><p>${frame.what}</p><p>${frame.ask}</p></section>
+    <section class="guide-card"><h4>Halachic frame</h4><ul><li><strong>Permits:</strong> ${frame.permit}</li><li><strong>Forbids:</strong> ${frame.forbid}</li><li><strong>Brings:</strong> ${frame.bring}</li></ul></section>
+    <section class="guide-card"><h4>Jewish vocabulary</h4><ul>${frame.terms.map(t=>`<li><strong>${t.tr}</strong> — ${t.en}. ${t.mini}</li>`).join('')}</ul></section>
+    <section class="guide-card"><h4>Calendar witness</h4><ul><li>Hebrew date: ${L1.hdate || '—'}</li><li>Hebrew script: ${L1.hdateHeb || '—'}</li><li>Holiday: ${L1.holiday || 'None today'}</li>${times.join('')}</ul></section>
+  </div>
+  <div class="share-card-preview"><div class="share-mark">Or HaYom</div><div class="share-line">${frame.badge}</div><div class="share-meta">${wd.en} · ${wd.tr} · ${wd.he}<br>${greg}<br>${L1.hdate || '—'} · ${L1.hdateHeb || '—'}</div></div>`);
+  $('#guideBody').innerHTML = guideParts.join('');
+}
+function setupContextInteractions(){
+  const overlay = $('#guideOverlay');
+  const open = ()=>{ overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); };
+  const close = ()=>{ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); };
+  $('#openGuideBtn')?.addEventListener('click', open);
+  $('#openTermsBtn')?.addEventListener('click', open);
+  $('#closeGuideBtn')?.addEventListener('click', close);
+  overlay?.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+  $('#shareContextBtn')?.addEventListener('click', async ()=>{
+    const frame = getFrameContent();
+    const wd = WEEKDAY_MIRROR[new Date().getDay()];
+    const text = `Or HaYom
+${frame.badge}
+${wd.en} / ${wd.tr} / ${wd.he}
+${L1.hdate || ''}
+${frame.what}
+${frame.ask}`;
+    try {
+      if (navigator.share) await navigator.share({title:'Or HaYom', text});
+      else { await navigator.clipboard.writeText(text); alert('Context card copied.'); }
+    } catch(_e){}
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  L2+L3+L4 — MEANING ENGINE via Claude API
+// ═══════════════════════════════════════════════════════════
+// WEEKLY ARC — arcul săptămânii, vineri
+const WEEKLY_ARCS = [
+  'Ai traversat separare, alegeri și viață. Acum pregătești spațiu.',
+  'Săptămâna a început cu lumină neîncepută. A ajuns la tine?',
+  'Ai numărat zilele. Dar le-ai trăit?',
+  'De la distincție la orientare la viață — și acum, pauza sacră.',
+  'Fiecare zi a adus ceva. Vineri întrebi: ce rămâne?',
+  'Săptămâna se închide. Ce duci cu tine în Shabbat?',
+];
+
+function buildWeeklyArc(date) {
+  if (date.getDay() !== 5) return; // doar vineri
+  const woy = Math.floor(date.getDate() / 7);
+  const arc = WEEKLY_ARCS[woy % WEEKLY_ARCS.length];
+  document.getElementById('arcLine').textContent = arc;
+  document.getElementById('weeklyArc').classList.add('show');
+}
+
+async function buildMeaning(date, tc, isAnomalyMode) {
+  const dow = date.getDay();
+  const source = getSource(L1, dow) || '';
+
+  // ── Loading state ─────────────────────────────────────────
+  const sdot = document.getElementById('sdot');
+  if (sdot) sdot.className = 'sdot loading';
+
+  // ── Body pentru /api/meaning ──────────────────────────────
+  const body = {
+    truthCut: tc?.text || '',
+    source,
+    context: {
+      dow,
+      gregorianDate: date.toISOString().split('T')[0],
+      hebrewDate:    L1?.hdate || '',
+      parasha:       L1?.parasha || '',
+      season:        tc?._ctx?.season || '',
+      contextKey:    tc?._ctx?.context_key || '',
+      selectedRhythm: tc?._ctx?.selected_rhythm || '',
+    },
+  };
+
+  try {
+    const res = await fetch('/api/meaning', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    // ── Error state ────────────────────────────────────────
+    if (!res.ok) {
+      console.error('buildMeaning: /api/meaning returned', res.status);
+      if (sdot) sdot.className = 'sdot err';
+      return localMeaning(date, source, tc);
+    }
+
+    const meaning = await res.json();
+
+    // ── Success state ──────────────────────────────────────
+    if (sdot) sdot.className = 'sdot';
+    return meaning;
+
+  } catch (e) {
+    // Rețea căzută sau fetch eșuat — fallback silențios
+    console.error('buildMeaning: fetch failed', e.message);
+    if (sdot) sdot.className = 'sdot err';
+    return localMeaning(date, source, tc);
+  }
+}
+
+function localMeaning(date, source, tc) {
+  const dow = date.getDay();
+  const base = [
+    {eyebrow:'Duminică · Zi de Reînceput',source_display:'Bereshit Rabbah — lumina înainte de soare',title:'Lumea reîncepe. Ești gata?',tension:'Nu știi cu ce intri în săptămâna asta. Dar intri oricum.',meaning:'Prima zi nu cere energie. Cere intenție.',action:'Formulează o singură intenție pentru această săptămână.'},
+    {eyebrow:'Luni · Separare',source_display:'Bereshit Rabbah — ziua fără ki tov',title:'Separarea doare. Și e necesară.',tension:'Distincțiile pe care le eviți nu dispar. Cresc.',meaning:'Luni e ziua în care nu s-a spus ki tov — pentru că separarea nu poate fi numită bună în momentul ei.',action:'Separă un lucru important de unul urgent.'},
+    {eyebrow:'Marți · Dublă Binecuvântare',source_display:"Ta'anit 29b — ki tov de două ori",title:'Astăzi, lumea a fost bună de două ori.',tension:'Ai trecut pe lângă ceva bun azi. Știi care.',meaning:'Nu orice zi cere confruntare. Marți cere recunoaștere.',action:'Recunoaște un lucru bun pe care l-ai ignorat.'},
+    {eyebrow:'Miercuri · Orientare',source_display:'Bereshit 1:14 — semne și vremi',title:'Fără orientare, mișcarea e haos.',tension:'Te miști mult. Dar nu știi unde.',meaning:'Luminătorii nu iluminează — orientează. Scopul lor e să marcheze timpurile.',action:'Evaluează: ești pe direcția ta?'},
+    {eyebrow:'Joi · Viață',source_display:"Pirkei DeRabbi Eliezer — binecuvântarea vieții",title:'Viața umple spațiile goale.',tension:'Ai spațiu gol. Și îl lași gol.',meaning:'Peștii și păsările n-au așteptat condiții perfecte. Au primit un spațiu și l-au umplut.',action:'Fă un singur lucru pe care l-ai amânat.'},
+    {eyebrow:'Erev Shabbat · Pregătire',source_display:'Shabbat 119b — Shabbat vine ca o regină',title:'Pregătești casa. Pregătești sufletul?',tension:'Graba de vineri e dovada că n-ai planificat.',meaning:'Vineri e singura zi în care pregătirea e mitzvah — nu din obligație, ci din dragoste.',action:'Închide un loop din această săptămână.'},
+    {eyebrow:'Shabbat Kodesh',source_display:'Bereshit 2:3 — sfințit și odihnit',title:'Nu faci. Ești.',tension:'Nu te oprești pentru că nu ai încredere că lumea merge fără tine.',meaning:'Dumnezeu nu s-a odihnit din oboseală. S-a odihnit ca act creator în sine.',action:'Lasă un singur lucru neterminat — intenționat.'},
+  ];
+  const b = base[dow] || base[0];
+  b.source_display = source.split('—')[0].trim();
+  return b;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════
+
+// Path counter — calendar-based, emotional language
+function buildPathCounter(date, L1) {
+  const doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+
+  function omerPhase(d) {
+    if (d <= 7)  return 'început';
+    if (d <= 14) return 'se limpezește';
+    if (d <= 21) return 'nu mai poți evita';
+    if (d <= 28) return 'mijloc';
+    if (d <= 35) return 'confruntare';
+    if (d <= 42) return 'aproape';
+    if (d <= 47) return 'ultimele zile';
+    if (d <= 48) return 'mâine e Sinai';
+    return 'ultima zi';
+  }
+
+  function elulPhase(d) {
+    if (d <= 8)  return 'Regele e în câmp';
+    if (d <= 20) return 'mijlocul lui Elul';
+    if (d <= 25) return 'aproape';
+    return 'ultimele zile';
+  }
+
+  let label, pct;
+
+  if (L1.omerDay > 0) {
+    const phase = omerPhase(L1.omerDay);
+    label = `Omer · Ziua ${L1.omerDay} · ${phase}`;
+    pct = Math.round((L1.omerDay / 49) * 100);
+  } else if (L1.hdateObj?.monthNum === 12) {
+    const d = L1.hdateObj.day;
+    const phase = elulPhase(d);
+    label = `Elul · Ziua ${d} · ${phase}`;
+    pct = Math.round((d / 29) * 100);
+  } else if (L1.hdateObj?.monthNum === 1 && L1.hdateObj?.day <= 10) {
+    const d = L1.hdateObj.day;
+    const phases = ['','prima zi','a doua zi','a treia zi','mijloc','mijloc','se apropie','se apropie','aproape','ultima șansă','Yom Kippur'];
+    label = `Zilele de Groază · ${phases[d] || `ziua ${d}`}`;
+    pct = Math.round((d / 10) * 100);
+  } else {
+    const yearDay = (L1.hdateObj?.monthNum > 0)
+      ? (L1.hdateObj.monthNum - 1) * 30 + (L1.hdateObj?.day || 1)
+      : doy;
+    label = `Ziua ${yearDay} din drumul anului`;
+    pct = Math.round((yearDay / 354) * 100);
+  }
+
+  document.getElementById('pathLabel').textContent = label;
+  setTimeout(() => {
+    document.getElementById('pathFill').style.width = Math.min(pct, 100) + '%';
+  }, 400);
+}
+
+function renderMorning(meaning, tc, date) {
+  // Eyebrow + source anchor
+  document.getElementById('hEyebrow').textContent = meaning.eyebrow || '';
+  if (meaning.source_display) {
+    document.getElementById('hSource').textContent = meaning.source_display;
+    document.getElementById('hSource').style.display = '';
+  }
+
+  // Core content
+  document.getElementById('hTitle').textContent = meaning.title || '';
+  document.getElementById('hTension').textContent = meaning.tension || '';
+  document.getElementById('hMeaning').textContent = meaning.meaning || '';
+  document.getElementById('hAction').textContent = meaning.action ? `→ ${meaning.action}` : '';
+  // Afișează CTA după ce content-ul e randat
+  const ctaBlock = document.getElementById('ctaBlock');
+  if (ctaBlock) ctaBlock.style.display = 'flex';
+
+  // Path counter + weekly arc
+  buildPathCounter(date, L1);
+  buildWeeklyArc(date);
+
+  // Truth Cut — micro-pause before appearing
+  if (tc && !tc._suspend) {
+    document.getElementById('truthCut').textContent = tc.text;
+    const wrap = document.getElementById('tcWrap');
+
+    // Store TC text globally for share + audio + notification
+    window._currentTC = tc;
+    window._currentTCDate = date.toLocaleDateString('ro-RO', { day:'numeric', month:'long', year:'numeric' });
+
+    // MICRO-PAUSE: content renders first, TC appears after delay
+    wrap.style.display = '';
+    wrap.style.opacity = '0';
+    setTimeout(() => {
+      wrap.classList.add('revealed');
+      // Wire audio button after reveal
+      setTimeout(() => buildTCAudioBtn(tc), 300);
+    }, 1800);
+
+    // Store for evening echo + engine memory
+    Store.set('yjd_tc_today', JSON.stringify({ tc, date: date.toISOString().split('T')[0] }));
+    rememberTruthCut(tc, tc._ctx || null, date);
+  }
+}
+
+// Share Truth Cut
+function shareTC() {
+  const tc = window._currentTC;
+  const d = window._currentTCDate;
+  if (!tc) return;
+  const text = `"${tc.text}"\n\n— The Cut · Your Jewish Day · ${d}`;
+  if (navigator.share) {
+    navigator.share({ text }).catch(() => copyTC(text));
+  } else {
+    copyTC(text);
+  }
+}
+
+function copyTC(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('tcCopied');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }).catch(() => {});
+}
+
+// ── AUDIO TRUTH CUT (1. Ziua are un sunet)
+// Best available TTS — Romanian voice for the label,
+// then the TC text spoken slowly, with weight
+function speakTruthCut(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+
+  // Small pause before speaking — mirrors the visual micro-pause
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    // Try to find the best available voice
+    const voices = speechSynthesis.getVoices();
+    const preferred = voices.find(v =>
+      v.lang.startsWith('ro') ||
+      v.name.includes('Google') ||
+      v.name.includes('Samantha') ||
+      v.name.includes('Daniel') ||
+      v.localService
+    ) || voices[0];
+    if (preferred) u.voice = preferred;
+    u.rate = 0.68;  // slow — weight
+    u.pitch = 0.92; // slightly lower — gravity
+    u.volume = 1;
+    speechSynthesis.speak(u);
+  }, 600);
+}
+
+// Audio button for TC — injected after TC renders
+function buildTCAudioBtn(tc) {
+  const share = document.querySelector('.tc-share');
+  if (!share || document.getElementById('tcAudioBtn')) return;
+
+  const icon = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>`;
+  const btn = document.createElement('button');
+  btn.id = 'tcAudioBtn';
+  btn.className = 'tc-share-btn';
+
+  const setIdle = () => {
+    btn.innerHTML = `${icon} Ascultă`;
+    btn.onclick = () => {
+      speakTruthCut(tc.text);
+      setStop();
+    };
+  };
+
+  const setStop = () => {
+    btn.textContent = '◼ Stop';
+    btn.onclick = () => {
+      speechSynthesis.cancel();
+      setIdle();
+    };
+  };
+
+  setIdle();
+  share.appendChild(btn);
+}
+
+// ── NOTIFICATIONS (5. Truth Cut dimineața)
+function toggleNotif() {
+  const btn = document.getElementById('notifBtn');
+  if (!('Notification' in window)) {
+    btn.textContent = 'Nu e suportat';
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    // Already granted — schedule
+    scheduleNotification();
+    btn.classList.add('on');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Activat`;
+    Store.set('yjd_notif', '1');
+  } else if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') {
+        scheduleNotification();
+        btn.classList.add('on');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Activat`;
+        Store.set('yjd_notif', '1');
+      }
+    });
+  }
+}
+
+function scheduleNotification() {
+  // Show a demo notification immediately to confirm activation
+  // In a real app this would use Service Workers for scheduled push
+  const tc = window._currentTC;
+  if (!tc) return;
+  setTimeout(() => {
+    new Notification('Your Jewish Day · The Cut', {
+      body: tc.text,
+      icon: '',
+      badge: '',
+      silent: false,
+    });
+  }, 2000);
+}
+
+function initNotifBtn() {
+  const btn = document.getElementById('notifBtn');
+  if (Store.get('yjd_notif') === '1' && 'Notification' in window && Notification.permission === 'granted') {
+    btn.classList.add('on');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Activat`;
+  }
+}
+
+// ── FIRST VISIT (4. Produsul recunoaște că e un început)
+function checkFirstVisit() {
+  const key = 'yjd_visited';
+  if (!Store.get(key)) {
+    Store.set(key, '1');
+    document.getElementById('firstVisitLine').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('firstVisitLine').classList.remove('show');
+    }, 8000);
+  }
+}
+
+function renderEveningView(date) {
+  const today = date.toISOString().split('T')[0];
+  const stored = Store.getJSON('yjd_tc_today', null);
+  const tc = (stored && stored.date === today) ? stored.tc : null;
+  const echo = buildEcho(tc);
+
+  document.getElementById('evDate').textContent =
+    date.toLocaleDateString('ro-RO', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
+
+  document.getElementById('evEcho').textContent = echo;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PARASHA, DAF, OMER, EVENT BAR
+// ═══════════════════════════════════════════════════════════
+const PF = {'Bereshit':['La început a creat Dumnezeu cerul și pământul.','Ce creezi tu din haos?'],'Noach':['Noach era om drept, fără prihană printre contemporanii săi.','Ce înseamnă a fi drept într-o lume care nu este?'],'Lech Lecha':['Pleacă din țara ta, din neamul tău, din casa tatălui tău.','De ce ești chemat să pleci pentru a te găsi?'],'Vayera':['Și Dumnezeu i s-a arătat la stejarii lui Mamre.','Când ai simțit ultima dată o prezență dincolo de tine?'],'Chayei Sarah':['Viața Sarei — o sută douăzeci și șapte de ani.','Cum vrei să fie amintită viața ta?'],'Toldot':['Acestea sunt urmașii lui Isaac.','Ce moștenești și ce lași mai departe?'],'Vayetze':['Și Iacov a plecat și a visat o scară.','Unde e locul în care cerul atinge pământul pentru tine?'],'Vayishlach':['Și s-a luptat cu el un om până dimineața.','Cu ce te lupți singur în noapte?'],'Vayeshev':['Și Iosif a visat un vis.','Ce vis ai care pare prea mare pentru prezentul tău?'],'Miketz':['Faraon a visat, după doi ani.','Câți ani de întuneric ești gata să traversezi?'],'Vayigash':['Și s-a apropiat Iuda de el.','Cui te poți apropia astăzi cu adevăr?'],'Vayechi':['Și a trăit Iacov în Egipt șaptesprezece ani.','Unde găsești viață chiar și în exil?'],'Shemot':['Acestea sunt numele fiilor lui Israel.','Ce nume poartă suferința ta ascunsă?'],'Vaera':['Și m-am arătat lui Avraam, lui Isaac și lui Iacov.','Ce parte din tine nu a fost eliberată?'],'Bo':['Intră la Faraon.','Ce Faraon interior îți refuză libertatea?'],'Beshalach':['Și a cântat Moise cântarea aceasta.','Ce cântare ai de cântat după traversarea mării?'],'Yitro':['La trei luni, au ajuns la Sinai.','Ce revelație aștepți tu cu răbdare?'],'Mishpatim':['Acestea sunt legile pe care le vei pune înaintea lor.','Ce lege nerostită guvernează relațiile tale?'],'Terumah':['Să-mi faceți un sanctuar și voi locui în mijlocul lor.','Unde este locul sacru pe care îl porți în tine?'],'Tetzaveh':['Lumânare curată de măsline, să ardă neîncetat.','Ce menții aprins cu grijă, zi după zi?'],'Ki Tisa':['Când vei lua suma fiilor lui Israel.','Ce vinovat porți în tine pe care nu l-ai iertat?'],'Vayakhel':['Și a adunat Moise toată adunarea.','Pe cine aduci împreună în jurul a ceea ce contează?'],'Pekudei':['Acestea sunt socotelile Cortului.','Cum dai socoteală de ce ți-a fost încredințat?'],'Vayikra':['Și l-a chemat pe Moise.','Cum răspunzi la chemarea ta?'],'Tzav':['Arderea de tot pe altar — toată noaptea.','Ce menții aprins toată noaptea?'],'Shemini':['Și în a opta zi a chemat Moise pe Aaron.','Ce nou început te așteaptă?'],'Tazria':['Când o femeie va concepe și va naște.','Ce îngrijești cu răbdare până la naștere?'],'Metzora':['Aceasta este legea celui cu lepră.','De ce izolare ai nevoie pentru a te vindeca?'],'Tazria-Metzora':['Puritatea vine după vindecare.','Ce vindecări amâni?'],'Acharei Mot':['Dopo moartea celor doi fii ai lui Aaron.','Cum transformi pierderea în reverență?'],'Kedoshim':['Fiți sfinți — pentru că Eu sunt sfânt.','Cum arată sfințenia ta în viața de zi cu zi?'],'Acharei Mot-Kedoshim':['Sfințenia urmează doliului.','Cum devii sfânt după ce ai suferit?'],'Emor':['Spune preoților — și transmite.','Ce transmiți mai departe?'],'Behar':['Și Dumnezeu a vorbit pe muntele Sinai.','Ce ți se cere să eliberezi la fiecare șapte ani?'],'Bechukotai':['Dacă veți merge după legile Mele.','Ce cale urmezi chiar și când drumul e greu?'],'Behar-Bechukotai':['Eliberarea cere disciplină.','Ce legi de eliberare urmezi?'],'Bamidbar':['Și a vorbit Dumnezeu în pustia Sinai.','De ce pustie ai nevoie pentru a auzi?'],'Naso':['Să te binecuvânteze Dumnezeu și să te păzească.','Cum dai binecuvântare altora astăzi?'],'Behaalotecha':['Când vei ridica luminile.','Ce lumini aprinzi pentru a lumina calea altora?'],'Shelach':['Trimite oameni să iscodească țara.','Ce pământ promis îți este teamă să-l revendici?'],'Korach':['Și s-a ridicat Korach.','Când rebeliunea este necesară?'],'Chukat':['Aceasta este legea — chok.','Ce legi respecți fără să înțelegi?'],'Balak':['Balak a văzut tot ce a făcut Israel.','Cum devii binecuvântare când alții cer blestem?'],'Pinchas':['Pinchas a oprit mânia.','Când acționezi cu zel și când cu răbdare?'],'Matot':['Și a vorbit Moise cu capii semințiilor.','Ce promisiuni ții și care trebuie reconsiderate?'],'Masei':['Acestea sunt etapele drumului lor.','Care sunt etapele drumului tău spiritual?'],'Matot-Masei':['Promisiunile definesc drumul.','Ce promisiuni îți definesc traiectoria?'],'Devarim':['Acestea sunt cuvintele pe care le-a vorbit Moise.','Ce cuvinte vrei să rostești la capătul drumului?'],'Vaetchanan':['Ascultă, Israele — Shema.','Cum asculți cu adevărat — cu toată inima?'],'Ekev':['Dacă vei asculta judecățile.','Ce recompensă cauți — vizibilă sau ascunsă?'],'Reeh':['Vezi, pun înaintea ta binecuvântarea și blestemul.','Ce alegi să privești astăzi?'],'Shoftim':['Judecători să-ți pui în toate cetățile.','Cine sunt judecătorii interiori care îți conduc deciziile?'],'Ki Tetze':['Când vei ieși la luptă.','Care e dușmanul interior cu care ieși la luptă?'],'Ki Tavo':['Când vei intra în țara.','Cum celebrezi roadele anilor de muncă?'],'Nitzavim':['Voi stați astăzi toți înaintea Dumnezeului vostru.','În fața a ce stai tu astăzi?'],'Vayeilech':['Și s-a dus Moise și a grăit.','Ce lași în urmă și ce duci cu tine?'],'Nitzavim-Vayeilech':['Stai. Pleacă. Ambele sunt sacre.','Când e momentul să stai și când să mergi?'],'Haazinu':['Ascultați, ceruri, și voi vorbi.','Ce poem al vieții tale ar spune cerul?'],'Vezot Haberachah':['Aceasta este binecuvântarea.','Ce binecuvântare finală dai celor dragi?']};
+
+function buildParasha() {
+  const el = document.getElementById('parashaEl');
+  if (!L1.parasha) { el.innerHTML='<div style="color:var(--dim);font-style:italic;">Parasha nu a fost găsită.</div>'; return; }
+  const pf = PF[L1.parasha] || [`Parasha ${L1.parasha}.`, 'Ce mesaj îți adresează textul sacru astăzi?'];
+  el.innerHTML = `
+    <div id="pnameEl" class="pname">${L1.parasha}</div>
+    ${L1.parashaHeb ? `<div class="phb">${L1.parashaHeb}</div>` : ''}
+    <div class="pfrag">"${pf[0]}"</div>
+    <div class="pq">${pf[1]}</div>
+    <button class="btn" style="font-size:12px;padding:5px 12px;" onclick="openExplain('${L1.parasha}','Explică tema centrală a parasei ${L1.parasha} și cum se aplică în viața de astăzi. Română, 3 paragrafe, profunzime. Ancorează în text real.')">Aprofundează</button>`;
+}
+
+const AVOT = [
+  {t:'Pe trei lucruri stă lumea: Torah, avodah, gemilut chasadim.',s:'Pirkei Avot 1:2'},
+  {t:'Ceea ce îți este nesuferit, nu face aproapelui tău. Restul — comentariu.',s:'Shabbat 31a — Hillel'},
+  {t:'Cine e înțelept? Cel care învață de la fiecare om.',s:'Pirkei Avot 4:1'},
+  {t:'Cine e bogat? Cel mulțumit cu ce are.',s:'Pirkei Avot 4:1'},
+  {t:'Dacă nu eu pentru mine, cine? Dacă numai pentru mine, ce sunt? Dacă nu acum, când?',s:'Pirkei Avot 1:14'},
+  {t:'Cel care salvează o singură suflet e ca și cum ar fi salvat o lume.',s:'Sanhedrin 37a'},
+  {t:'Am învățat cel mai mult de la elevii mei.',s:"Ta'anit 7a"},
+  {t:'Nu spune: voi studia când voi fi liber. Poate nu vei fi niciodată.',s:'Pirkei Avot 2:4'},
+  {t:'Judecă fiecare om pe latura binelui.',s:'Pirkei Avot 1:6'},
+  {t:'Fiecare om e dator să spună: lumea a fost creată pentru mine.',s:'Sanhedrin 37a'},
+  {t:'Teshuvah, tefillah și tzedakah întorc decretul.',s:'Unetaneh Tokef'},
+  {t:'Lumea a fost creată pentru cel care spune: lumea a fost creată pentru mine.',s:'Sanhedrin 37a'},
+];
+
+function buildDaf() {
+  const doy = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/86400000);
+  const q = AVOT[doy % AVOT.length];
+  let html = '';
+  if (L1.dafYomi) html += `
+    <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line);">
+      <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Daf Yomi</div>
+      <div style="font-family:'Inter',sans-serif;font-size:17px;color:var(--gold2);margin-bottom:6px;">${L1.dafYomi}</div>
+      <button class="btn" style="font-size:11px;padding:5px 11px;" onclick="openExplain('${L1.dafYomi}','Descrie pe scurt ce tratează acest daf și care e principiul central pentru viața de zi cu zi. Română, 2 paragrafe.')">Ce discută?</button>
+    </div>`;
+  html += `
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Citat</div>
+    <div style="font-size:17px;line-height:1.85;color:var(--gold3);font-style:italic;margin-bottom:7px;">"${q.t}"</div>
+    <div style="font-size:11px;color:var(--dim);letter-spacing:.05em;margin-bottom:4px;">${q.s}</div>
+    <button class="btn" style="font-size:11px;padding:5px 11px;" onclick="openExplain('${q.s}','Explică profunzimea acestui citat și cum se aplică concret astăzi. Română, 2-3 paragrafe.')">Aprofundează</button>`;
+  document.getElementById('dafEl').innerHTML = html;
+}
+
+const SEFIROT = [['Chesed','חֶסֶד','Iubire'],['Gevurah','גְּבוּרָה','Putere'],['Tiferet','תִּפְאֶרֶת','Frumusețe'],['Netzach','נֵצַח','Victorie'],['Hod','הוֹד','Splendoare'],['Yesod','יְסוֹד','Fundament'],['Malchut','מַלְכוּת','Regalitate']];
+const OHBN = ['','א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח','יט','כ','כא','כב','כג','כד','כה','כו','כז','כח','כט','ל','לא','לב','לג','לד','לה','לו','לז','לח','לט','מ','מא','מב','מג','מד','מה','מו','מז','מח','מט'];
+
+function buildOmer() {
+  const d = Number.parseInt(L1.omerDay, 10);
+
+  if (!Number.isFinite(d) || d < 1 || d > 49) {
+    document.getElementById('omerPanel').style.display='none';
+    return;
+  }
+
+  document.getElementById('omerPanel').style.display='';
+  document.getElementById('omerTag').textContent = `Ziua ${d}`;
+
+  const wi = Math.ceil(d / 7) - 1;
+  const di = (d - 1) % 7;
+  const ws = SEFIROT[wi];
+  const ds = ws ? ws[di] : null;
+
+  if (!ws || !ws[0] || !ds) {
+    document.getElementById('omerPanel').style.display='none';
+    return;
+  }
+
+  document.getElementById('omerContent').innerHTML = `
+    <div class="onum">${d}</div>
+    <div class="ohb">יוֹם ${OHBN[d]} לָעֹמֶר</div>
+    <div style="font-size:15px;color:var(--soft);margin-bottom:10px;">Săptămâna ${wi+1} · Ziua ${di+1}</div>
+    <div class="osefs">${SEFIROT.map((s,i)=>`<div class="oc ${i===wi?'on':''}">${s[0]}</div>`).join('')}</div>
+    <div class="omean"><strong style="color:var(--gold2)">${ds}</strong> în <strong style="color:var(--gold2)">${ws[0]}</strong></div>
+    <button class="btn" style="margin:12px auto 0;" onclick="openAsk('Explică această combinație Omer ca muncă spirituală zilnică. Română, profunzime, concret.')">Ce înseamnă?</button>`;
+}
+let timerIv = null;
+function buildEventBar() {
+  const bar=document.getElementById('ebar');
+  if (!L1.shabbatCandles) { bar.classList.remove('show'); return; }
+  const target = new Date(L1.shabbatCandles);
+  bar.classList.add('show');
+  const ct = target.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
+  const cd = target.toLocaleDateString('ro-RO',{weekday:'long',day:'numeric',month:'long'});
+  let hstr = '';
+  if (L1.shabbatHavdala) { const h=new Date(L1.shabbatHavdala); hstr=` · Havdalah ${h.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}`; }
+  document.getElementById('elabel').textContent = L1.isShabbat ? 'Shabbat Kodesh' : (L1.holiday?`Erev ${L1.holiday}`:'Shabbat');
+  document.getElementById('einfo').innerHTML = L1.isShabbat
+    ? `Havdalah${hstr}`
+    : `Lumânări ${cd} la <strong style="color:var(--gold2)">${ct}</strong>${hstr}`;
+  document.getElementById('eicon').textContent = L1.isShabbat ? '✡' : '🕯';
+  const et = document.getElementById('etimer');
+  if (timerIv) clearInterval(timerIv);
+  function tick() { const d=target-new Date(); if(d<=0){et.textContent='Shabbat Shalom';clearInterval(timerIv);return;} const h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000); et.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+  tick(); timerIv=setInterval(tick,1000);
+}
+
+function buildDateStrip(date) {
+  const months=['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
+  let h=`<div class="dc">Today · ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}</div>`;
+  if(L1.hdate) h+=`<div class="dc hi">${L1.hdate}</div>`;
+  if(L1.hdateHeb) h+=`<div class="dc hb">${L1.hdateHeb}</div>`;
+  if(L1.holiday) h+=`<div class="dc hi">${L1.holiday}</div>`;
+  else if(L1.isShabbat) h+=`<div class="dc hi">שַׁבָּת קֹדֶשׁ</div>`;
+  if(L1.isRoshChodesh) h+=`<div class="dc hi">Rosh Chodesh</div>`;
+  if(L1.omerDay>0) h+=`<div class="dc knife">עֹמֶר ${OHBN[L1.omerDay]}</div>`;
+  document.getElementById('dateStrip').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRAYER MODULE
+// ═══════════════════════════════════════════════════════════
+const PR = {
+  sfarad:{
+    shacharit:{name:'Modeh Ani',heb:'מוֹדֶה אֲנִי לְפָנֶיךָ\nמֶלֶךְ חַי וְקַיָּם,\nשֶׁהֶחֱזַרְתָּ בִּי נִשְׁמָתִי בְּחֶמְלָה.\nרַבָּה אֱמוּנָתֶֽךָ.',t:'Modé ani lefanécha,\nMeléch chai ve-kayám,\nshehechezárta bi nishmáti bejemla.\nRabá emunatécha.',ro:'Îți mulțumesc înaintea Ta,\nRege viu și etern,\ncare mi-ai redat sufletul cu milă.\nMare este credincioșia Ta.'},
+    mincha:{name:'Ashrei',heb:'אַשְׁרֵי יוֹשְׁבֵי בֵיתֶֽךָ,\nעוֹד יְהַלְלֽוּךָ סֶּֽלָה.\nאַשְׁרֵי הָעָם שֶׁכָּֽכָה לּוֹ,\nאַשְׁרֵי הָעָם שֶׁיְּיָ אֱלֹהָֽיו.',t:'Ashré yoshvé vetécha,\nod yehalelucha seláh.\nAshré haám shekácha lo,\nAshré haám sheAdoshem Eloháv.',ro:'Fericiți cei ce locuiesc în casa Ta,\ncare Te laudă neîncetat.\nFericit este poporul căruia îi este astfel.'},
+    maariv:{name:'Shema',heb:'שְׁמַע יִשְׂרָאֵל,\nיְהֹוָה אֱלֹהֵֽינוּ,\nיְהֹוָה אֶחָד.',t:'Shemá Yisraél,\nAdonái Eloéinu,\nAdonái Echád.',ro:'Ascultă, Israele,\nDomnul Dumnezeul nostru,\nDomnul este Unul.'},
+  },
+  ashkenaz:{
+    shacharit:{name:'Modeh Ani',heb:'מוֹדֶה אֲנִי לְפָנֶיךָ\nמֶלֶךְ חַי וְקַיָּם,\nשֶׁהֶחֱזַרְתָּ בִּי נִשְׁמָתִי בְּחֶמְלָה.\nרַבָּה אֱמוּנָתֶֽךָ.',t:'Modeh ani lefanecha,\nMelech chai vekayam,\nshehechezarta bi nishmosi bechemlah.\nRabboh emunossecho.',ro:'Îți mulțumesc înaintea Ta,\nRege viu și etern,\ncare mi-ai redat sufletul cu milă.\nMare este credincioșia Ta.'},
+    mincha:{name:'Ashrei',heb:'אַשְׁרֵי יוֹשְׁבֵי בֵיתֶֽךָ,\nעוֹד יְהַלְלֽוּךָ סֶּֽלָה.',t:'Ashrei yoshvei veisecho,\nod yehallelucho seloh.',ro:'Fericiți cei ce locuiesc în casa Ta,\ncare Te laudă neîncetat.'},
+    maariv:{name:'Shema',heb:'שְׁמַע יִשְׂרָאֵל,\nיְהֹוָה אֱלֹהֵֽינוּ,\nיְהֹוָה אֶחָד.',t:'Shema Yisroel,\nAdonoi Eloheinu,\nAdonoi Echod.',ro:'Ascultă, Israele,\nDomnul Dumnezeul nostru,\nDomnul este Unul.'},
+  },
+  mizrahi:{
+    shacharit:{name:'Modeh Ani',heb:'מוֹדֶה אֲנִי לְפָנֶיךָ\nמֶלֶךְ חַי וְקַיָּם,\nשֶׁהֶחֱזַרְתָּ בִּי נִשְׁמָתִי בְּחֶמְלָה.\nרַבָּה אֱמוּנָתֶֽךָ.',t:"Modeh ani lefanácha,\nMalach ḥai ve-qayyám,\nshe-heḥazárta bi nishmáti be-ḥemla.\nRabba emunatécha.",ro:'Îți mulțumesc înaintea Ta,\nRege viu și etern,\ncare mi-ai redat sufletul cu milă.\nMare este credincioșia Ta.'},
+    mincha:{name:'Ashrei',heb:'אַשְׁרֵי יוֹשְׁבֵי בֵיתֶֽךָ,\nעוֹד יְהַלְלֽוּךָ סֶּֽלָה.',t:"Ashrei yoshvéi beitécha,\nod yehalelucha seláh.",ro:'Fericiți cei ce locuiesc în casa Ta,\ncare Te laudă neîncetat.'},
+    maariv:{name:'Shema',heb:"שְׁמַע יִשְׂרָאֵל,\nיְהֹוָה אֱלֹהֵֽינוּ,\nיְהֹוָה אֶחָד.",t:"Shema' Yisra'el,\nAdonay 'Elohenu,\nAdonay 'Echad.",ro:'Ascultă, Israele,\nDomnul Dumnezeul nostru,\nDomnul este Unul.'},
+  },
+};
+
+let minhag = Store.get('yjd_minhag','sfarad')||'sfarad';
+let prayerType = 'shacharit';
+let speaking = false;
+
+function renderPrayer(type) {
+  prayerType=type;
+  const p=PR[minhag][type];
+  const lb={'sfarad':'Nusach Sefarad','ashkenaz':'Nusach Ashkenaz','mizrahi':'Nusach Mizrahi'}[minhag];
+  document.getElementById('prayerContent').innerHTML=`
+    <div class="pname-label">${p.name} · ${lb}</div>
+    <div class="pheb">${p.heb.replace(/\n/g,'<br>')}</div>
+    <div class="ptrlit">${p.t.replace(/\n/g,'<br>')}</div>
+    <div class="pro">${p.ro.replace(/\n/g,'<br>')}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:0;">
+      <button class="btn" onclick="openExplain('${p.name}','Explică semnificația, originea și kavana rugăciunii ${p.name} în tradiția ${lb}. Cum o spui cu inima? Română.')">Ce înseamnă?</button>
+      <button class="btn dim" id="sndBtn" onclick="speakP(${JSON.stringify(p.t)})">▶ Ascultă</button>
+    </div>`;
+}
+
+function switchPrayer(t,btn){document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('on'));btn.classList.add('on');renderPrayer(t);}
+function speakP(text){const btn=document.getElementById('sndBtn');if(!window.speechSynthesis)return;if(speaking){speechSynthesis.cancel();speaking=false;btn.textContent='▶ Ascultă';btn.classList.remove('sp');return;}const u=new SpeechSynthesisUtterance(text);u.lang='he-IL';u.rate=0.72;u.onstart=()=>{speaking=true;btn.textContent='◼ Stop';btn.classList.add('sp');};u.onend=u.onerror=()=>{speaking=false;btn.textContent='▶ Ascultă';btn.classList.remove('sp');};speechSynthesis.speak(u);}
+function onMinhag(v){minhag=v;Store.set('yjd_minhag',v);renderPrayer(prayerType);}
+
+// ═══════════════════════════════════════════════════════════
+//  KAVANA
+// ═══════════════════════════════════════════════════════════
+function loadKavana(){const list=Store.getJSON('yjd_kavana',[]);renderKL(list);}
+function saveKavana(){const t=document.getElementById('kavanaInput').value.trim();if(!t)return;const d=new Date().toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});const list=Store.getJSON('yjd_kavana',[]);list.unshift({date:d,text:t,hdate:L1.hdate||''});Store.set('yjd_kavana',JSON.stringify(list.slice(0,14)));document.getElementById('kavanaInput').value='';renderKL(list.slice(0,14));}
+function renderKL(list){if(!list.length){document.getElementById('kavanaList').innerHTML='';return;}document.getElementById('kavanaList').innerHTML=list.map(k=>`<div class="kentry"><div class="kdot"></div><div><div class="kd">${k.date}${k.hdate?' · '+k.hdate:''}</div><div class="kt">${k.text}</div></div></div>`).join('');}
+
+// ═══════════════════════════════════════════════════════════
+//  MODE SWITCH
+// ═══════════════════════════════════════════════════════════
+function setMode(m){
+  const isMorn=m==='morning';
+  document.getElementById('morningView').style.display=isMorn?'':'none';
+  document.getElementById('eveningView').style.display=isMorn?'none':'';
+  document.getElementById('mTabMorn').classList.toggle('on',isMorn);
+  document.getElementById('mTabEve').classList.toggle('on',!isMorn);
+  if(!isMorn) renderEveningView(new Date());
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AI EXPLAINER MODAL
+// ═══════════════════════════════════════════════════════════
+async function openExplain(title, prompt) {
+  // ── Deschide modalul cu loading state ───────────────────
+  document.getElementById('mTitle').textContent = title;
+
+  const mBody = document.getElementById('mBody');
+  mBody.innerHTML = '';
+
+  const loading = document.createElement('div');
+  loading.style.cssText = 'color:var(--muted);font-style:italic;';
+  loading.textContent = 'Se caută în tradiție';
+
+  // dots animați — structura exactă din original
+  const mdots = document.createElement('span');
+  mdots.className = 'mdots';
+  for (let i = 0; i < 3; i++) mdots.appendChild(document.createElement('span'));
+  loading.appendChild(mdots);
+  mBody.appendChild(loading);
+
+  document.getElementById('overlay').classList.add('open');
+
+  try {
+    const res = await fetch('/api/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, prompt }),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    const text = data.explanation || '';
+
+    // ── Randare sigură — niciun innerHTML cu date externe ──
+    mBody.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mbody';
+
+    text.split('\n\n').filter(Boolean).forEach(para => {
+      const p = document.createElement('p');
+      p.textContent = para;          // textContent, nu innerHTML
+      wrapper.appendChild(p);
+    });
+
+    mBody.appendChild(wrapper);
+
+  } catch (e) {
+    console.error('openExplain error:', e.message);
+
+    mBody.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mbody';
+
+    const p1 = document.createElement('p');
+    p1.textContent = 'Nu am putut accesa explicația live acum.';
+
+    const p2 = document.createElement('p');
+    p2.textContent = 'Structura originală a aplicației rămâne funcțională; problema este doar pe layerul extern de explicații.';
+
+    wrapper.appendChild(p1);
+    wrapper.appendChild(p2);
+    mBody.appendChild(wrapper);
+  }
+}
+function maybeClose(e){if(e.target===document.getElementById('overlay'))closeOverlay();}
+function closeOverlay(){document.getElementById('overlay').classList.remove('open');}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+async function init(){
+  const today=new Date();
+  try {
+  document.getElementById('minhagSel').value=minhag;
+  renderPrayer('shacharit');
+  loadKavana();
+  checkFirstVisit();
+  initNotifBtn();
+
+  // Auto-detect morning/evening
+  const hour=today.getHours();
+  if(hour>=18||hour<5) setMode('evening');
+
+  // L1 — Sacred Engine
+  document.getElementById('sdot').className='sdot loading';
+  try{
+    const data=await fetchHebcal(today);
+    parseHebcal(data,today);
+    renderL1Panel();
+    renderContextFrame(today);
+    // Cache Hebcal pentru aceeași zi — protejează contextul zilelor sacre la rețea indisponibilă
+    Store.set('yjd_hebcal_cache', JSON.stringify({
+      date: today.toISOString().split('T')[0],
+      holiday: L1.holiday, holidayHeb: L1.holidayHeb, holidaySubcat: L1.holidaySubcat,
+      omerDay: L1.omerDay, omerHeb: L1.omerHeb,
+      hdate: L1.hdate, hdateHeb: L1.hdateHeb, hdateObj: L1.hdateObj,
+      isShabbat: L1.isShabbat, isErevShabbat: L1.isErevShabbat,
+      isFast: L1.isFast, isRoshChodesh: L1.isRoshChodesh,
+      isYomTov: L1.isYomTov, isCholHaMoed: L1.isCholHaMoed,
+      parasha: L1.parasha, parashaHeb: L1.parashaHeb,
+      dafYomi: L1.dafYomi,
+      shabbatCandles: L1.shabbatCandles, shabbatHavdala: L1.shabbatHavdala,
+    }));
+  }catch(e){
+    // Încearcă cache din aceeași zi înainte de fallback generic
+    const cached = Store.getJSON('yjd_hebcal_cache', null);
+    const todayISO = today.toISOString().split('T')[0];
+    if (cached && cached.date === todayISO) {
+      // Cache valid pentru ziua curentă — reconstruiește L1
+      L1.holiday=cached.holiday||null; L1.holidayHeb=cached.holidayHeb||'';
+      L1.holidaySubcat=cached.holidaySubcat||''; L1.omerDay=cached.omerDay||0;
+      L1.omerHeb=cached.omerHeb||''; L1.hdate=cached.hdate||'';
+      L1.hdateHeb=cached.hdateHeb||''; L1.hdateObj=cached.hdateObj||hebrewDateIntl(today);
+      L1.isShabbat=cached.isShabbat||false; L1.isErevShabbat=cached.isErevShabbat||false;
+      L1.isFast=cached.isFast||false; L1.isRoshChodesh=cached.isRoshChodesh||false;
+      L1.isYomTov=cached.isYomTov||false; L1.isCholHaMoed=cached.isCholHaMoed||false;
+      L1.parasha=cached.parasha||null; L1.parashaHeb=cached.parashaHeb||'';
+      L1.dafYomi=cached.dafYomi||null;
+      L1.shabbatCandles=cached.shabbatCandles||null; L1.shabbatHavdala=cached.shabbatHavdala||null;
+      renderL1Panel();
+      renderContextFrame(today);
+      document.getElementById('sdot').className='sdot err';
+      document.getElementById('calTag').textContent='Cache (offline)';
+    } else {
+      // Fallback generic — fără cache valid pentru azi
+      L1.hdateObj=hebrewDateIntl(today);
+      L1.hdate=`${L1.hdateObj.day} ${L1.hdateObj.monthEn} ${L1.hdateObj.year}`;
+      L1.hdateHeb=`${['','א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח','יט','כ','כא','כב','כג','כד','כה','כו','כז','כח','כט','ל'][L1.hdateObj.day]||L1.hdateObj.day} ${L1.hdateObj.monthHe}`;
+      L1.isShabbat=today.getDay()===6;L1.isErevShabbat=today.getDay()===5;
+      renderL1Panel();
+      renderContextFrame(today);
+      document.getElementById('sdot').className='sdot err';
+      document.getElementById('calTag').textContent='Intl (fallback)';
+    }
+  }
+
+  buildDateStrip(today);
+  buildEventBar();
+
+  // Select Truth Cut — noul pipeline (suspend > override > score > fallback)
+  const tc = selectTruthCut(L1, today);
+
+  // SUSPEND — produsul tace (Tisha B'Av, Yom Kippur)
+  if (tc._suspend) {
+    document.getElementById('morningView').style.display = 'none';
+    document.getElementById('anomalyView').classList.add('show');
+
+    // UI diferențiat după suspension_type
+    const isSacred = tc._suspension_type === 'sacred_fullness';
+    const anomalyHebMap = {
+      'yom_kippur': 'יוֹם כִּפּוּר',
+      'tisha_bav': 'תִּשְׁעָה בְּאָב',
+    };
+    const anomalyLineMap = {
+      'yom_kippur': 'Astăzi nu adăugăm nimic. Ziua e deja completă.',
+      'tisha_bav': 'Astăzi nu e ziua să citești. E ziua să taci.',
+    };
+
+    document.getElementById('anomalyHeb').textContent = anomalyHebMap[tc._context_key] || '';
+    document.getElementById('anomalyGreg').textContent =
+      today.toLocaleDateString('ro-RO', {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+    document.getElementById('anomalyLine').textContent = anomalyLineMap[tc._context_key] || '';
+
+    // Stil vizual diferit
+    if (isSacred) {
+      document.getElementById('anomalyHeb').style.color = 'rgba(201,169,110,.35)';
+      document.body.style.background = '#0f0e0c';
+    } else {
+      document.getElementById('anomalyHeb').style.color = 'rgba(201,169,110,.12)';
+      document.body.style.background = '#060504';
+    }
+
+    safeRevealApp();
+    return;
+  }
+
+  buildParasha();
+  buildDaf();
+  buildOmer();
+
+  // L2+L3+L4 — Meaning Engine
+  const meaning = await buildMeaning(today, tc, false);
+  renderMorning(meaning, tc, today);
+
+  } catch (e) {
+    console.error('Fatal init error', e);
+    renderFatalFallback('Fișierul tău original a fost păstrat, dar au fost adăugate protecții minime în jurul pornirii.');
+  } finally {
+    safeRevealApp();
+  }
+}
+
+window.addEventListener('error', e => console.error('Window error:', e.message));
+window.addEventListener('unhandledrejection', e => console.error('Unhandled promise rejection:', e.reason));
+document.addEventListener('DOMContentLoaded',()=>{ setupContextInteractions(); init(); });
+</script>
+</body>
+</html>

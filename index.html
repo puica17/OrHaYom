@@ -795,7 +795,7 @@ footer a:hover{color:var(--muted);}
         <div class="ptabs" id="ptabs">
           <button class="ptab on" onclick="switchPrayer('shacharit',this)">Shacharit</button>
           <button class="ptab" onclick="switchPrayer('mincha',this)">Mincha</button>
-          <button class="ptab" onclick="switchPrayer('maariv',this)">Ma'ariv</button>
+          <button class="ptab" onclick="switchPrayer('maariv',this)">Ma’ariv</button>
         </div>
         <div class="pc" id="prayerContent"></div>
       </div>
@@ -1765,12 +1765,12 @@ function pickFrameState(){
 function getFrameContent(){
   const state = pickFrameState();
   const base = {
-    ordinary:{badge:'Sacred weekday / Yom Chol', what:'An ordinary weekday inside the covenantal order of Torah, mitzvah, and sacred time.', ask:'Avodah, kavanah, honest action, and faithful movement inside the real duties of the day.', permit:'Work, building, speech, earning, repair, decision, and responsibility when held inside halachic dignity.', forbid:'Living the day as spiritually ownerless, empty, evasive, or cut off from God's order.', bring:'A field of service in which ordinary action can still become avodah when directed with truth.'},
+    ordinary:{badge:'Sacred weekday / Yom Chol', what:'An ordinary weekday inside the covenantal order of Torah, mitzvah, and sacred time.', ask:'Avodah, kavanah, honest action, and faithful movement inside the real duties of the day.', permit:'Work, building, speech, earning, repair, decision, and responsibility when held inside halachic dignity.', forbid:'Living the day as spiritually ownerless, empty, evasive, or cut off from God’s order.', bring:'A field of service in which ordinary action can still become avodah when directed with truth.'},
     erev:{badge:'Erev Shabbat', what:'The holy threshold in which the weekday closes and Shabbat is prepared to enter.', ask:'Hachanah — preparation of home, table, body, time, and inner state before the entrance of Shabbat.', permit:'Necessary preparation: candles, table, food, clothing, order, reconciliation, and whatever must be ready before sunset.', forbid:'Dragging confusion, delay, scattered labor, and unfinished inward noise across the boundary of sacred time.', bring:'The turning of the soul from labor toward kedushah; from weekday pressure toward readiness to receive.'},
     shabbat:{badge:'Shabbat', what:'The seventh day sanctified by God: cessation, kedushah, presence, table, prayer, family, and rest.', ask:'Shevitah — to cease, receive, remember, bless, and dwell inside the holiness of the day.', permit:'Prayer, kiddush, meals, song, Torah, family presence, listening, blessing, and menuchah.', forbid:'Melachah, control, fixing, producing, and carrying weekday mastery into the day of covenantal rest.', bring:'A world received from God rather than sustained by your intervention; a dwelling of presence before God, with family, soul, and sacred time.'},
     yomtov:{badge:L1.holiday || 'Yom Tov', what:'A sacred festival day fixed in the Jewish calendar and entered through command, memory, and observance.', ask:'To receive the appointed time according to its mitzvot, prayers, story, and halachic boundary.', permit:'Festival prayer, seudah, family gathering, remembrance, rejoicing, and the practices proper to that moed.', forbid:'Reducing the festival to mood, symbolism, or inspiration detached from its commanded form.', bring:'Collective memory, covenant identity, and a sanctified meeting with Jewish time.'},
-    fast:{badge:L1.holiday || 'Fast day', what:'A day of ta'anit: restraint, return, repentance, and moral exposure before God.', ask:'Humility, teshuvah, examination, confession, restraint, and truth without ornament.', permit:'Prayer, selichah, silence, inward accounting, and the stripping away of avoidance.', forbid:'Indifference, indulgence, denial, and the refusal to face what the day reveals.', bring:'Sobriety of soul, moral clarity, and a broken-open space in which return becomes possible.'},
-    roshchodesh:{badge:'Rosh Chodesh', what:'The head of the month: renewal in the rhythm of Israel's lunar time.', ask:'To notice renewal, mark sacred cycle, and begin again with gratitude and awareness.', permit:'Marking the new month, added prayer, gratitude, recalibration, and renewed intention.', forbid:'Living as if time were flat, interchangeable, and untouched by sacred renewal.', bring:'Chidush — the gift of beginning again under the sign of covenant time.'}
+    fast:{badge:L1.holiday || 'Fast day', what:'A day of ta’anit: restraint, return, repentance, and moral exposure before God.', ask:'Humility, teshuvah, examination, confession, restraint, and truth without ornament.', permit:'Prayer, selichah, silence, inward accounting, and the stripping away of avoidance.', forbid:'Indifference, indulgence, denial, and the refusal to face what the day reveals.', bring:'Sobriety of soul, moral clarity, and a broken-open space in which return becomes possible.'},
+    roshchodesh:{badge:'Rosh Chodesh', what:'The head of the month: renewal in the rhythm of Israel’s lunar time.', ask:'To notice renewal, mark sacred cycle, and begin again with gratitude and awareness.', permit:'Marking the new month, added prayer, gratitude, recalibration, and renewed intention.', forbid:'Living as if time were flat, interchangeable, and untouched by sacred renewal.', bring:'Chidush — the gift of beginning again under the sign of covenant time.'}
   };
   return {state, ...(base[state] || base.ordinary), terms: TERM_BANK[state] || TERM_BANK.ordinary};
 }
@@ -1910,7 +1910,7 @@ function localMeaning(date, source, tc) {
   const base = [
     {eyebrow:'Duminică · Zi de Reînceput',source_display:'Bereshit Rabbah — lumina înainte de soare',title:'Lumea reîncepe. Ești gata?',tension:'Nu știi cu ce intri în săptămâna asta. Dar intri oricum.',meaning:'Prima zi nu cere energie. Cere intenție.',action:'Formulează o singură intenție pentru această săptămână.'},
     {eyebrow:'Luni · Separare',source_display:'Bereshit Rabbah — ziua fără ki tov',title:'Separarea doare. Și e necesară.',tension:'Distincțiile pe care le eviți nu dispar. Cresc.',meaning:'Luni e ziua în care nu s-a spus ki tov — pentru că separarea nu poate fi numită bună în momentul ei.',action:'Separă un lucru important de unul urgent.'},
-    {eyebrow:'Marți · Dublă Binecuvântare',source_display:"Ta'anit 29b — ki tov de două ori",title:'Astăzi, lumea a fost bună de două ori.',tension:'Ai trecut pe lângă ceva bun azi. Știi care.',meaning:'Nu orice zi cere confruntare. Marți cere recunoaștere.',action:'Recunoaște un lucru bun pe care l-ai ignorat.'},
+    {eyebrow:'Marți · Dublă Binecuvântare',source_display:"Ta’anit 29b — ki tov de două ori",title:'Astăzi, lumea a fost bună de două ori.',tension:'Ai trecut pe lângă ceva bun azi. Știi care.',meaning:'Nu orice zi cere confruntare. Marți cere recunoaștere.',action:'Recunoaște un lucru bun pe care l-ai ignorat.'},
     {eyebrow:'Miercuri · Orientare',source_display:'Bereshit 1:14 — semne și vremi',title:'Fără orientare, mișcarea e haos.',tension:'Te miști mult. Dar nu știi unde.',meaning:'Luminătorii nu iluminează — orientează. Scopul lor e să marcheze timpurile.',action:'Evaluează: ești pe direcția ta?'},
     {eyebrow:'Joi · Viață',source_display:"Pirkei DeRabbi Eliezer — binecuvântarea vieții",title:'Viața umple spațiile goale.',tension:'Ai spațiu gol. Și îl lași gol.',meaning:'Peștii și păsările n-au așteptat condiții perfecte. Au primit un spațiu și l-au umplut.',action:'Fă un singur lucru pe care l-ai amânat.'},
     {eyebrow:'Erev Shabbat · Pregătire',source_display:'Shabbat 119b — Shabbat vine ca o regină',title:'Pregătești casa. Pregătești sufletul?',tension:'Graba de vineri e dovada că n-ai planificat.',meaning:'Vineri e singura zi în care pregătirea e mitzvah — nu din obligație, ci din dragoste.',action:'Închide un loop din această săptămână.'},
@@ -2197,7 +2197,7 @@ const AVOT = [
   {t:'Cine e bogat? Cel mulțumit cu ce are.',s:'Pirkei Avot 4:1'},
   {t:'Dacă nu eu pentru mine, cine? Dacă numai pentru mine, ce sunt? Dacă nu acum, când?',s:'Pirkei Avot 1:14'},
   {t:'Cel care salvează o singură suflet e ca și cum ar fi salvat o lume.',s:'Sanhedrin 37a'},
-  {t:'Am învățat cel mai mult de la elevii mei.',s:"Ta'anit 7a"},
+  {t:'Am învățat cel mai mult de la elevii mei.',s:"Ta’anit 7a"},
   {t:'Nu spune: voi studia când voi fi liber. Poate nu vei fi niciodată.',s:'Pirkei Avot 2:4'},
   {t:'Judecă fiecare om pe latura binelui.',s:'Pirkei Avot 1:6'},
   {t:'Fiecare om e dator să spună: lumea a fost creată pentru mine.',s:'Sanhedrin 37a'},
@@ -2305,7 +2305,7 @@ const PR = {
   mizrahi:{
     shacharit:{name:'Modeh Ani',heb:'מוֹדֶה אֲנִי לְפָנֶיךָ\nמֶלֶךְ חַי וְקַיָּם,\nשֶׁהֶחֱזַרְתָּ בִּי נִשְׁמָתִי בְּחֶמְלָה.\nרַבָּה אֱמוּנָתֶֽךָ.',t:"Modeh ani lefanácha,\nMalach ḥai ve-qayyám,\nshe-heḥazárta bi nishmáti be-ḥemla.\nRabba emunatécha.",ro:'Îți mulțumesc înaintea Ta,\nRege viu și etern,\ncare mi-ai redat sufletul cu milă.\nMare este credincioșia Ta.'},
     mincha:{name:'Ashrei',heb:'אַשְׁרֵי יוֹשְׁבֵי בֵיתֶֽךָ,\nעוֹד יְהַלְלֽוּךָ סֶּֽלָה.',t:"Ashrei yoshvéi beitécha,\nod yehalelucha seláh.",ro:'Fericiți cei ce locuiesc în casa Ta,\ncare Te laudă neîncetat.'},
-    maariv:{name:'Shema',heb:"שְׁמַע יִשְׂרָאֵל,\nיְהֹוָה אֱלֹהֵֽינוּ,\nיְהֹוָה אֶחָד.",t:"Shema' Yisra'el,\nAdonay 'Elohenu,\nAdonay 'Echad.",ro:'Ascultă, Israele,\nDomnul Dumnezeul nostru,\nDomnul este Unul.'},
+    maariv:{name:'Shema',heb:"שְׁמַע יִשְׂרָאֵל,\nיְהֹוָה אֱלֹהֵֽינוּ,\nיְהֹוָה אֶחָד.",t:"Shema' Yisra’el,\nAdonay 'Elohenu,\nAdonay 'Echad.",ro:'Ascultă, Israele,\nDomnul Dumnezeul nostru,\nDomnul este Unul.'},
   },
 };
 
@@ -2495,7 +2495,7 @@ async function init(){
   // Select Truth Cut — noul pipeline (suspend > override > score > fallback)
   const tc = selectTruthCut(L1, today);
 
-  // SUSPEND — produsul tace (Tisha B'Av, Yom Kippur)
+  // SUSPEND — produsul tace (Tisha B’Av, Yom Kippur)
   if (tc._suspend) {
     document.getElementById('morningView').style.display = 'none';
     document.getElementById('anomalyView').classList.add('show');
